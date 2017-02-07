@@ -23,5 +23,29 @@ module Arrow
         yield(Record.new(self, i))
       end
     end
+
+    def find_column(name_or_index)
+      case name_or_index
+      when String, Symbol
+        name = name_or_index
+        index = resolve_name(name)
+      else
+        index = name_or_index
+      end
+      (@columns ||= columns)[index]
+    end
+
+    private
+    def resolve_name(name)
+      (@name_to_index ||= build_name_to_index)[name.to_s]
+    end
+
+    def build_name_to_index
+      index = {}
+      schema.fields.each_with_index do |field, i|
+        index[field.name] = i
+      end
+      index
+    end
   end
 end

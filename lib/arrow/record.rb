@@ -16,37 +16,11 @@ module Arrow
   class Record
     def initialize(record_batch, i)
       @record_batch = record_batch
-      @schema = record_batch.schema
-      @columns = record_batch.columns
       @i = i
     end
 
     def [](name_or_index)
-      find_column(name_or_index).get_value(@i)
-    end
-
-    def find_column(name_or_index)
-      case name_or_index
-      when String, Symbol
-        name = name_or_index
-        index = resolve_name(name)
-      else
-        index = name_or_index
-      end
-      @columns[index]
-    end
-
-    private
-    def resolve_name(name)
-      (@name_to_index ||= build_name_to_index)[name.to_s]
-    end
-
-    def build_name_to_index
-      index = {}
-      @schema.fields.each_with_index do |field, i|
-        index[field.name] = i
-      end
-      index
+      @record_batch.find_column(name_or_index).get_value(@i)
     end
   end
 end
