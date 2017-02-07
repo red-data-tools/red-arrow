@@ -14,31 +14,15 @@
 
 module Arrow
   module IO
-    class Loader < GObjectIntrospection::Loader
-      class << self
-        def load
-          super("ArrowIO", IO)
-        end
-      end
+    module AutoClosable
+      def open(*args, &block)
+        io = super(*args)
+        return io unless block
 
-      private
-      def pre_load(repository, namespace)
-        require "arrow/io/auto-closable"
-      end
-
-      def post_load(repository, namespace)
-        require_libraries
-      end
-
-      def require_libraries
-      end
-
-      def load_object_info(info)
-        super
-
-        klass = @base_module.const_get(rubyish_class_name(info))
-        if klass.respond_to?(:open)
-          klass.singleton_class.prepend(AutoClosable)
+        begin
+          yield(io)
+        ensure
+          io.close
         end
       end
     end
