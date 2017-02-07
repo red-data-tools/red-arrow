@@ -13,17 +13,16 @@
 # limitations under the License.
 
 module Arrow
-  module IO
-    module AutoClosable
-      def open(*args, &block)
-        io = super(*args)
-        return io unless block
+  module BlockOpenable
+    def open(*args, &block)
+      io = super(*args)
+      return io unless block
+      return yield(io) unless io.respond_to?(:close)
 
-        begin
-          yield(io)
-        ensure
-          io.close
-        end
+      begin
+        yield(io)
+      ensure
+        io.close
       end
     end
   end

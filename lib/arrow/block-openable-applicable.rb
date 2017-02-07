@@ -12,25 +12,17 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-require "arrow/block-openable-applicable"
+require "arrow/block-openable"
 
 module Arrow
-  module IPC
-    class Loader < GObjectIntrospection::Loader
-      class << self
-        def load
-          super("ArrowIPC", IPC)
-        end
-      end
+  module BlockOpenableApplicable
+    private
+    def load_object_info(info)
+      super
 
-      include BlockOpenableApplicable
-
-      private
-      def post_load(repository, namespace)
-        require_libraries
-      end
-
-      def require_libraries
+      klass = @base_module.const_get(rubyish_class_name(info))
+      if klass.respond_to?(:open)
+        klass.singleton_class.prepend(BlockOpenable)
       end
     end
   end
