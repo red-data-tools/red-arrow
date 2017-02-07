@@ -12,21 +12,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+require "arrow/record"
+
 module Arrow
-  class Loader < GObjectIntrospection::Loader
-    class << self
-      def load
-        super("Arrow", Arrow)
+  class RecordBatch
+    include Enumerable
+
+    def each
+      n_rows.times do |i|
+        yield(Record.new(self, i))
       end
-    end
-
-    private
-    def post_load(repository, namespace)
-      require_libraries
-    end
-
-    def require_libraries
-      require "arrow/record-batch"
     end
   end
 end
