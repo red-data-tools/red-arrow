@@ -12,26 +12,17 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-require "arrow/block-openable-applicable"
-
 module Arrow
   module IPC
-    class Loader < GObjectIntrospection::Loader
-      class << self
-        def load
-          super("ArrowIPC", IPC)
+    class StreamReader
+      include Enumerable
+
+      def each
+        loop do
+          record_batch = next_record_batch
+          break if record_batch.nil?
+          yield(record_batch)
         end
-      end
-
-      include BlockOpenableApplicable
-
-      private
-      def post_load(repository, namespace)
-        require_libraries
-      end
-
-      def require_libraries
-        require "arrow/ipc/stream-reader"
       end
     end
   end
