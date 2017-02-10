@@ -13,23 +13,19 @@
 # limitations under the License.
 
 module Arrow
-  class Loader < GObjectIntrospection::Loader
-    class << self
-      def load
-        super("Arrow", Arrow)
+  class Field
+    alias_method :initialize_raw, :initialize
+    def initialize(name, data_type)
+      case data_type
+      when String, Symbol
+        data_type_name = data_type.to_s.capitalize.gsub(/\AUint/, "UInt")
+        data_type_class_name = "#{data_type_name}DataType"
+        if Arrow.const_defined?(data_type_class_name)
+          data_type_class = Arrow.const_get(data_type_class_name)
+          data_type = data_type_class.new
+        end
       end
-    end
-
-    private
-    def post_load(repository, namespace)
-      require_libraries
-    end
-
-    def require_libraries
-      require "arrow/array"
-      require "arrow/array-builder"
-      require "arrow/field"
-      require "arrow/record-batch"
+      initialize_raw(name, data_type)
     end
   end
 end
