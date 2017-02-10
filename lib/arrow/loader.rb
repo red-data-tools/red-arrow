@@ -27,6 +27,7 @@ module Arrow
 
     def require_libraries
       require "arrow/array"
+      require "arrow/array-builder"
       require "arrow/record-batch"
     end
   end

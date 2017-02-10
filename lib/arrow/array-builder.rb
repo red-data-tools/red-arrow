@@ -13,29 +13,19 @@
 # limitations under the License.
 
 module Arrow
-  class Array
-    include Enumerable
-
+  class ArrayBuilder
     class << self
-      def new(values)
-        builder_class_name = "#{name}Builder"
-        if const_defined?(builder_class_name)
-          builder_class = const_get(builder_class_name)
-          builder_class.build(values)
-        else
-          super
+      def build(values)
+        builder = new
+        values.each do |value|
+          if value.nil?
+            builder.append_null
+          else
+            builder.append(value)
+          end
         end
+        builder.finish
       end
-    end
-
-    def each
-      length.times do |i|
-        yield(self[i])
-      end
-    end
-
-    def [](i)
-      get_value(i)
     end
   end
 end
