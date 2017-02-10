@@ -13,21 +13,17 @@
 # limitations under the License.
 
 module Arrow
-  class Loader < GObjectIntrospection::Loader
-    class << self
-      def load
-        super("Arrow", Arrow)
+  class Array
+    include Enumerable
+
+    def each
+      length.times do |i|
+        yield(self[i])
       end
     end
 
-    private
-    def post_load(repository, namespace)
-      require_libraries
-    end
-
-    def require_libraries
-      require "arrow/array"
-      require "arrow/record-batch"
+    def [](i)
+      get_value(i)
     end
   end
 end
