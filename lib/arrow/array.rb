@@ -33,9 +33,5 @@ module Arrow
         yield(self[i])
       end
     end
-
-    def [](i)
-      get_value(i)
-    end
   end
 end

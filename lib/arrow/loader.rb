@@ -31,5 +31,13 @@ module Arrow
       require "arrow/field"
       require "arrow/record-batch"
     end
+
+    def rubyish_method_name(function_info, options={})
+      if function_info.n_in_args == 1 and function_info.name == "get_value"
+        "[]"
+      else
+        super
+      end
+    end
   end
 end
