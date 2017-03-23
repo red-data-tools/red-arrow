@@ -20,7 +20,7 @@ module Arrow
     end
 
     def [](name_or_index)
-      @record_batch.find_column(name_or_index).get_value(@i)
+      @record_batch.find_column(name_or_index)[@i]
     end
   end
 end
