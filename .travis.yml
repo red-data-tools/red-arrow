@@ -1,0 +1,15 @@
+notifications:
+  email:
+    recipients:
+      - kou@cozmixng.org
+
+sudo: required
+
+services:
+  - docker
+
+install:
+  - docker build -t kou/red-arrow .
+
+script:
+  - docker run kou/red-arrow /bin/sh -c "bundle exec rake"
