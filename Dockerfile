@@ -8,8 +8,7 @@ RUN \
   apt update && \
   apt install -y --allow-unauthenticated groonga-keyring && \
   apt update && \
-  apt install -y libarrow-glib-dev && \
-  apt autoclean
+  apt install -y libarrow-glib-dev
 
 RUN mkdir /app
 WORKDIR /app
