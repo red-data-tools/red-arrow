@@ -14,13 +14,14 @@
 
 module Arrow
   class Record
-    def initialize(record_batch, i)
+    attr_accessor :index
+    def initialize(record_batch, index)
       @record_batch = record_batch
-      @i = i
+      @index = index
     end
 
-    def [](name_or_index)
-      @record_batch.find_column(name_or_index)[@i]
+    def [](column_name_or_column_index)
+      @record_batch.find_column(column_name_or_column_index)[@index]
     end
   end
 end

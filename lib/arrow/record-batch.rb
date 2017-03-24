@@ -18,9 +18,21 @@ module Arrow
   class RecordBatch
     include Enumerable
 
-    def each
-      n_rows.times do |i|
-        yield(Record.new(self, i))
+    def each(reuse_record: false)
+      unless block_given?
+        return to_enum(__method__, reuse_record: reuse_record)
+      end
+
+      if reuse_record
+        record = Record.new(self, nil)
+        n_rows.times do |i|
+          record.index = i
+          yield(record)
+        end
+      else
+        n_rows.times do |i|
+          yield(Record.new(self, i))
+        end
       end
     end
 
