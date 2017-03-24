@@ -5,11 +5,11 @@ MAINTAINER Kouhei Sutou <kou@clear-code.com>
 RUN \
   echo "deb http://packages.groonga.org/debian/ jessie main" > \
     /etc/apt/sources.list.d/groonga.list && \
-  sudo apt update && \
-  sudo apt install -y --allow-unauthenticated groonga-keyring && \
-  sudo apt update && \
-  sudo apt install -y libarrow-glib-dev && \
-  sudo apt clean
+  apt update && \
+  apt install -y --allow-unauthenticated groonga-keyring && \
+  apt update && \
+  apt install -y libarrow-glib-dev && \
+  apt clean
 
 RUN mkdir /app
 WORKDIR /app
