@@ -7,7 +7,7 @@ fields = [
 ]
 schema = Arrow::Schema.new(fields)
 
-Arrow::IO::FileOutputStream.open("/tmp/logs.arrow", false) do |output|
+Arrow::IO::FileOutputStream.open("/tmp/logs-batch.arrow", false) do |output|
   Arrow::IPC::FileWriter.open(output, schema) do |writer|
     counts = [1, 2, 4, 8]
     arrow_counts = Arrow::UInt32Array.new(counts)
