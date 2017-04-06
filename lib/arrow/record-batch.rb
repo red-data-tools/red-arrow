@@ -44,7 +44,12 @@ module Arrow
       else
         index = name_or_index
       end
-      (@columns ||= columns)[index]
+      columns[index]
+    end
+
+    alias_method :columns_raw, :columns
+    def columns
+      @columns ||= columns_raw
     end
 
     private

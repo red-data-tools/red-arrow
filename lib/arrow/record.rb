@@ -23,5 +23,9 @@ module Arrow
     def [](column_name_or_column_index)
       @record_batch.find_column(column_name_or_column_index)[@index]
     end
+
+    def columns
+      @record_batch.columns
+    end
   end
 end
