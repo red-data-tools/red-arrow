@@ -2,8 +2,8 @@
 
 require "arrow"
 
-Arrow::IO::MemoryMappedFile.open("/tmp/logs-stream.arrow", :read) do |input|
-  Arrow::IPC::StreamReader.open(input) do |reader|
+Arrow::IOMemoryMappedFile.open("/tmp/stream.arrow", :read) do |input|
+  Arrow::IPCStreamReader.open(input) do |reader|
     fields = reader.schema.fields
     reader.each_with_index do |record_batch, i|
       puts("=" * 40)

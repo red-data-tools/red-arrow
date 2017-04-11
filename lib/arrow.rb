@@ -17,14 +17,10 @@ require "gobject-introspection"
 require "arrow/version"
 
 require "arrow/loader"
-require "arrow/io/loader"
-require "arrow/ipc/loader"
 
 module Arrow
   class Error < StandardError
   end
 
   Loader.load
-  IO::Loader.load
-  IPC::Loader.load
 end

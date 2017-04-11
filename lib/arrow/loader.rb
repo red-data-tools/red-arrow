@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+require "arrow/block-openable"
+
 module Arrow
   class Loader < GObjectIntrospection::Loader
     class << self
@@ -30,6 +32,18 @@ module Arrow
       require "arrow/array-builder"
       require "arrow/field"
       require "arrow/record-batch"
+
+      require "arrow/ipc-file-reader"
+      require "arrow/ipc-stream-reader"
+    end
+
+    def load_object_info(info)
+      super
+
+      klass = @base_module.const_get(rubyish_class_name(info))
+      if klass.respond_to?(:open)
+        klass.singleton_class.prepend(BlockOpenable)
+      end
     end
 
     def rubyish_method_name(function_info, options={})
