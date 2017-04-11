@@ -4,7 +4,7 @@ MAINTAINER Kouhei Sutou <kou@clear-code.com>
 
 RUN \
   apt update && \
-  apt install apt-transport-https && \
+  apt install -y apt-transport-https && \
   echo "deb https://packages.groonga.org/debian/ jessie main" > \
     /etc/apt/sources.list.d/groonga.list && \
   apt update && \
