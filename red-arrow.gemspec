@@ -24,7 +24,7 @@ require "arrow/version"
 Gem::Specification.new do |spec|
   spec.name = "red-arrow"
   spec.version = Arrow::VERSION
-  spec.homepage = "https://github.com/kou/red-arrow"
+  spec.homepage = "https://github.com/red-data-tools/red-arrow"
   spec.authors = ["Kouhei Sutou"]
   spec.email = ["kou@clear-code.com"]
 
