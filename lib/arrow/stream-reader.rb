@@ -13,14 +13,14 @@
 # limitations under the License.
 
 module Arrow
-  module IPC
-    class FileReader
-      include Enumerable
+  class StreamReader
+    include Enumerable
 
-      def each
-        n_record_batches.times do |i|
-          yield(get_record_batch(i))
-        end
+    def each
+      loop do
+        record_batch = next_record_batch
+        break if record_batch.nil?
+        yield(record_batch)
       end
     end
   end

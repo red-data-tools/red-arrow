@@ -27,5 +27,13 @@ module Arrow
     def columns
       @record_batch.columns
     end
+
+    def to_h
+      attributes = {}
+      @record_batch.schema.fields.each_with_index do |field, i|
+        attributes[field.name] = self[i]
+      end
+      attributes
+    end
   end
 end

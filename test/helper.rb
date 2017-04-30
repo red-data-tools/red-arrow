@@ -14,4 +14,6 @@
 
 require "arrow"
 
+require "tempfile"
+
 require "test-unit"

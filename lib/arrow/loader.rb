@@ -33,8 +33,8 @@ module Arrow
       require "arrow/field"
       require "arrow/record-batch"
 
-      require "arrow/ipc-file-reader"
-      require "arrow/ipc-stream-reader"
+      require "arrow/file-reader"
+      require "arrow/stream-reader"
     end
 
     def load_object_info(info)
