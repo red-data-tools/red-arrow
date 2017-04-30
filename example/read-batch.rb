@@ -27,7 +27,7 @@ Arrow::MemoryMappedFile.open("/tmp/batch.arrow", :read) do |input|
         values = record_batch.collect do |record|
           record[field_name]
         end
-        puts("#{field_name}: #{values.inspect}")
+        puts("  #{field_name}: #{values.inspect}")
       end
     end
   end
