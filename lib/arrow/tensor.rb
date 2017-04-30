@@ -13,27 +13,7 @@
 # limitations under the License.
 
 module Arrow
-  class Array
-    include Enumerable
-
-    class << self
-      def new(values)
-        builder_class_name = "#{name}Builder"
-        if const_defined?(builder_class_name)
-          builder_class = const_get(builder_class_name)
-          builder_class.build(values)
-        else
-          super
-        end
-      end
-    end
-
-    def each
-      length.times do |i|
-        yield(self[i])
-      end
-    end
-
+  class Tensor
     def to_arrow
       self
     end

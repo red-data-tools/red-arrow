@@ -32,6 +32,7 @@ module Arrow
       require "arrow/array-builder"
       require "arrow/field"
       require "arrow/record-batch"
+      require "arrow/tensor"
 
       require "arrow/file-reader"
       require "arrow/stream-reader"
