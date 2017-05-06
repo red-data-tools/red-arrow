@@ -13,16 +13,15 @@
 # limitations under the License.
 
 module Arrow
-  module BlockOpenable
-    def open(*args, &block)
-      io = super(*args)
-      return io unless block
-      return yield(io) unless io.respond_to?(:close)
-
-      begin
-        yield(io)
-      ensure
-        io.close
+  if const_defined?(:MemoryMappedInputStream)
+    class MemoryMappedFile
+      class << self
+        def open(path, mode, &block)
+          warn("#{self}.#{__method__}(path, mode, &block): " +
+               "use #{MemoryMappedInputStream}.open(path, &block) instead: " +
+               caller(1, 1)[0])
+          MemoryMappedInputStream.open(path, &block)
+        end
       end
     end
   end

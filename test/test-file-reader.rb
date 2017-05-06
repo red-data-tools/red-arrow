@@ -52,61 +52,60 @@ class FileReaderTest < Test::Unit::TestCase
       end
     end
 
-    Arrow::MemoryMappedFile.open(tempfile.path, :read) do |input|
-      Arrow::FileReader.open(input) do |reader|
-        reader.each do |record_batch|
-          assert_equal([
-                         {
-                           "uint8"  => 1,
-                           "uint16" => 1,
-                           "uint32" => 1,
-                           "uint64" => 1,
-                           "int8"   => 1,
-                           "int16"  => 1,
-                           "int32"  => 1,
-                           "int64"  => 1,
-                           "float"  => 1.100000023841858,
-                           "double" => 1.1,
-                         },
-                         {
-                           "uint8"  => 2,
-                           "uint16" => 2,
-                           "uint32" => 2,
-                           "uint64" => 2,
-                           "int8"   => -2,
-                           "int16"  => -2,
-                           "int32"  => -2,
-                           "int64"  => -2,
-                           "float"  => -2.200000047683716,
-                           "double" => -2.2,
-                         },
-                         {
-                           "uint8"  => 4,
-                           "uint16" => 4,
-                           "uint32" => 4,
-                           "uint64" => 4,
-                           "int8"   => 4,
-                           "int16"  => 4,
-                           "int32"  => 4,
-                           "int64"  => 4,
-                           "float"  => 4.400000095367432,
-                           "double" => 4.4,
-                         },
-                         {
-                           "uint8"  => 8,
-                           "uint16" => 8,
-                           "uint32" => 8,
-                           "uint64" => 8,
-                           "int8"   => -8,
-                           "int16"  => -8,
-                           "int32"  => -8,
-                           "int64"  => -8,
-                           "float"  => -8.800000190734863,
-                           "double" => -8.8,
-                         },
-                       ],
-                       record_batch.collect(&:to_h))
-        end
+    Arrow::MemoryMappedInputStream.open(tempfile.path) do |input|
+      reader = Arrow::FileReader.new(input)
+      reader.each do |record_batch|
+        assert_equal([
+                       {
+                         "uint8"  => 1,
+                         "uint16" => 1,
+                         "uint32" => 1,
+                         "uint64" => 1,
+                         "int8"   => 1,
+                         "int16"  => 1,
+                         "int32"  => 1,
+                         "int64"  => 1,
+                         "float"  => 1.100000023841858,
+                         "double" => 1.1,
+                       },
+                       {
+                         "uint8"  => 2,
+                         "uint16" => 2,
+                         "uint32" => 2,
+                         "uint64" => 2,
+                         "int8"   => -2,
+                         "int16"  => -2,
+                         "int32"  => -2,
+                         "int64"  => -2,
+                         "float"  => -2.200000047683716,
+                         "double" => -2.2,
+                       },
+                       {
+                         "uint8"  => 4,
+                         "uint16" => 4,
+                         "uint32" => 4,
+                         "uint64" => 4,
+                         "int8"   => 4,
+                         "int16"  => 4,
+                         "int32"  => 4,
+                         "int64"  => 4,
+                         "float"  => 4.400000095367432,
+                         "double" => 4.4,
+                       },
+                       {
+                         "uint8"  => 8,
+                         "uint16" => 8,
+                         "uint32" => 8,
+                         "uint64" => 8,
+                         "int8"   => -8,
+                         "int16"  => -8,
+                         "int32"  => -8,
+                         "int64"  => -8,
+                         "float"  => -8.800000190734863,
+                         "double" => -8.8,
+                       },
+                     ],
+                     record_batch.collect(&:to_h))
       end
     end
   end

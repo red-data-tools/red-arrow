@@ -16,6 +16,34 @@ module Arrow
   class FileReader
     include Enumerable
 
+    # For backward compatibility
+    if respond_to?(:open)
+      class << self
+        alias_method :open_raw, :open
+        def open(input)
+          warn("#{self}.#{__method__}: use #{self}.new instead: #{caller(1, 1)[0]}")
+          reader = open_raw(input)
+          if block_given?
+            yield(reader)
+          else
+            reader
+          end
+        end
+      end
+    else
+      class << self
+        def open(input)
+          warn("#{self}.#{__method__}: use #{self}.new instead #{caller(1, 1)[0]}")
+          reader = new(input)
+          if block_given?
+            yield(reader)
+          else
+            reader
+          end
+        end
+      end
+    end
+
     def each
       n_record_batches.times do |i|
         yield(get_record_batch(i))

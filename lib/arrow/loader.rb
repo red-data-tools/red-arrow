@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-require "arrow/block-openable"
+require "arrow/block-closable"
 
 module Arrow
   class Loader < GObjectIntrospection::Loader
@@ -36,14 +36,16 @@ module Arrow
 
       require "arrow/file-reader"
       require "arrow/stream-reader"
+
+      require "arrow/compatibility"
     end
 
     def load_object_info(info)
       super
 
       klass = @base_module.const_get(rubyish_class_name(info))
-      if klass.respond_to?(:open)
-        klass.singleton_class.prepend(BlockOpenable)
+      if klass.method_defined?(:close)
+        klass.extend(BlockClosable)
       end
     end
 
