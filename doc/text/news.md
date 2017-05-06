@@ -1,5 +1,15 @@
 # News
 
+## 0.3.0 - 2017-05-06
+
+### Improvements
+
+  * `Arrow::Record#to_h`: Added.
+
+  * `#to_arrow`: Added convenience methods for polymorphism.
+
+  * Supported Apache Arrow 0.3.0.
+
 ## 0.2.2 - 2017-04-24
 
 ### Improvements
