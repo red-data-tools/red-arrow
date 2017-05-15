@@ -9,11 +9,9 @@ RUN \
     /etc/apt/sources.list.d/groonga.list && \
   apt update && \
   apt install -y --allow-unauthenticated groonga-keyring && \
-  apt update && \
-  apt install -y libarrow-glib-dev
+  apt update
 
 RUN mkdir /app
 WORKDIR /app
 COPY . /app
 RUN bundle install
-

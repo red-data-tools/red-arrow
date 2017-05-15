@@ -1,7 +1,7 @@
 notifications:
   email:
     recipients:
-      - kou@cozmixng.org
+      - red-data-tools@ml.commit-email.info
 
 sudo: required
 
@@ -9,7 +9,7 @@ services:
   - docker
 
 install:
-  - docker build -t kou/red-arrow .
+  - docker build -t red-data-tools/red-arrow .
 
 script:
-  - docker run kou/red-arrow /bin/sh -c "bundle exec rake"
+  - docker run red-data-tools/red-arrow /bin/sh -c "bundle exec rake"
