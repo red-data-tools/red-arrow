@@ -16,8 +16,8 @@
 
 require "arrow"
 
-Arrow::MemoryMappedInputStream.open("/tmp/batch.arrow") do |input|
-  reader = Arrow::FileReader.new(input)
+Arrow::MemoryMappedInputStream.open("/tmp/file.arrow") do |input|
+  reader = Arrow::RecordBatchFileReader.new(input)
   fields = reader.schema.fields
   reader.each_with_index do |record_batch, i|
     puts("=" * 40)

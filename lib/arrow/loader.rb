@@ -34,8 +34,8 @@ module Arrow
       require "arrow/record-batch"
       require "arrow/tensor"
 
-      require "arrow/file-reader"
-      require "arrow/stream-reader"
+      require "arrow/record-batch-file-reader"
+      require "arrow/record-batch-stream-reader"
 
       require "arrow/compatibility"
     end

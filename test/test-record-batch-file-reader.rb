@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-class FileReaderTest < Test::Unit::TestCase
+class RecordBatchFileReaderTest < Test::Unit::TestCase
   test("write/read") do
     fields = [
       Arrow::Field.new("uint8",  :uint8),
@@ -53,7 +53,7 @@ class FileReaderTest < Test::Unit::TestCase
     end
 
     Arrow::MemoryMappedInputStream.open(tempfile.path) do |input|
-      reader = Arrow::FileReader.new(input)
+      reader = Arrow::RecordBatchFileReader.new(input)
       reader.each do |record_batch|
         assert_equal([
                        {

@@ -30,7 +30,7 @@ fields = [
 ]
 schema = Arrow::Schema.new(fields)
 
-Arrow::FileOutputStream.open("/tmp/batch.arrow", false) do |output|
+Arrow::FileOutputStream.open("/tmp/file.arrow", false) do |output|
   Arrow::FileWriter.open(output, schema) do |writer|
     uints = [1, 2, 4, 8]
     ints = [1, -2, 4, -8]

@@ -13,36 +13,8 @@
 # limitations under the License.
 
 module Arrow
-  class StreamReader
+  class RecordBatchStreamReader
     include Enumerable
-
-    # For backward compatibility
-    if respond_to?(:open)
-      class << self
-        alias_method :open_raw, :open
-        def open(input)
-          warn("#{self}.#{__method__}: use #{self}.new instead: #{caller(1, 1)[0]}")
-          reader = open_raw(input)
-          if block_given?
-            yield(reader)
-          else
-            reader
-          end
-        end
-      end
-    else
-      class << self
-        def open(input)
-          warn("#{self}.#{__method__}: use #{self}.new instead #{caller(1, 1)[0]}")
-          reader = new(input)
-          if block_given?
-            yield(reader)
-          else
-            reader
-          end
-        end
-      end
-    end
 
     def each
       loop do
