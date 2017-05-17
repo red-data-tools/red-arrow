@@ -34,6 +34,7 @@ module Arrow
       require "arrow/column"
       require "arrow/field"
       require "arrow/record-batch"
+      require "arrow/table"
       require "arrow/tensor"
 
       require "arrow/record-batch-file-reader"
