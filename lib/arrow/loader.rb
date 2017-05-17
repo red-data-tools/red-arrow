@@ -52,6 +52,21 @@ module Arrow
       end
     end
 
+    def load_method_info(info, klass, method_name)
+      case klass.name
+      when "Arrow::StringArray"
+        case method_name
+        when "[]"
+          method_name = "get_value"
+        when "get_string"
+          method_name = "[]"
+        end
+        super(info, klass, method_name)
+      else
+        super
+      end
+    end
+
     def rubyish_method_name(function_info, options={})
       if function_info.n_in_args == 1 and function_info.name == "get_value"
         "[]"
