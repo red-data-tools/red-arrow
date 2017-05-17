@@ -17,7 +17,7 @@ module Arrow
     include Enumerable
 
     def each(&block)
-      return enum_for(:each) unless block_given?
+      return to_enum(__method__) unless block_given?
 
       data.each(&block)
     end
