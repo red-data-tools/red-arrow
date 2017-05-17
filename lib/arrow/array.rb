@@ -30,7 +30,11 @@ module Arrow
 
     def each
       length.times do |i|
-        yield(self[i])
+        if null?(i)
+          yield(nil)
+        else
+          yield(self[i])
+        end
       end
     end
 

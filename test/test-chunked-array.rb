@@ -12,18 +12,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-class ArrayTest < Test::Unit::TestCase
-  sub_test_case(".new") do
-    test("Boolean") do
-      array = Arrow::BooleanArray.new([true, false, true])
-      assert_equal([true, false, true],
-                   array.to_a)
-    end
-  end
-
+class ChunkedArrayTest < Test::Unit::TestCase
   test("#each") do
-    array = Arrow::BooleanArray.new([true, false, nil, true])
+    arrayes = [
+      Arrow::BooleanArray.new([true, false]),
+      Arrow::BooleanArray.new([nil, true]),
+    ]
+    chunked_array = Arrow::ChunkedArray.new(arrayes)
     assert_equal([true, false, nil, true],
-                 array.to_a)
+                 chunked_array.to_a)
   end
 end

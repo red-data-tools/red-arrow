@@ -12,18 +12,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-class ArrayTest < Test::Unit::TestCase
-  sub_test_case(".new") do
-    test("Boolean") do
-      array = Arrow::BooleanArray.new([true, false, true])
-      assert_equal([true, false, true],
-                   array.to_a)
-    end
-  end
+module Arrow
+  class Column
+    include Enumerable
 
-  test("#each") do
-    array = Arrow::BooleanArray.new([true, false, nil, true])
-    assert_equal([true, false, nil, true],
-                 array.to_a)
+    def each(&block)
+      return enum_for(:each) unless block_given?
+
+      data.each(&block)
+    end
   end
 end

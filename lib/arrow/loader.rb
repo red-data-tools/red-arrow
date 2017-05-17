@@ -30,6 +30,8 @@ module Arrow
     def require_libraries
       require "arrow/array"
       require "arrow/array-builder"
+      require "arrow/chunked-array"
+      require "arrow/column"
       require "arrow/field"
       require "arrow/record-batch"
       require "arrow/tensor"
