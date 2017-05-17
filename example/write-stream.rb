@@ -31,7 +31,7 @@ fields = [
 schema = Arrow::Schema.new(fields)
 
 Arrow::FileOutputStream.open("/tmp/stream.arrow", false) do |output|
-  Arrow::StreamWriter.open(output, schema) do |writer|
+  Arrow::RecordBatchStreamWriter.open(output, schema) do |writer|
     uints = [1, 2, 4, 8]
     ints = [1, -2, 4, -8]
     floats = [1.1, -2.2, 4.4, -8.8]
