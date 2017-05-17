@@ -20,7 +20,7 @@ gobject-introspection gem is a Ruby bindings of GObject Introspection. Red Arrow
 
 ## Install
 
-Install Arrow GLib before install Red Arrow. Use [Apache Arrow packages](https://github.com/kou/arrow-packages) for installing Arrow GLib.
+Install Arrow GLib before install Red Arrow. Use [Apache Arrow packages](https://github.com/red-data-tools/arrow-packages) for installing Arrow GLib.
 
 Install Red Arrow after you install Arrow GLib:
 
