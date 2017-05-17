@@ -38,6 +38,9 @@ end
 
 desc "Run tests"
 task :test do
+  cd("dependency-check") do
+    ruby("-S", "rake")
+  end
   ruby("test/run-test.rb")
 end
 
