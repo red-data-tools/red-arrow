@@ -30,6 +30,7 @@ module Arrow
     def require_libraries
       require "arrow/array"
       require "arrow/array-builder"
+      require "arrow/buffer"
       require "arrow/chunked-array"
       require "arrow/column"
       require "arrow/field"
