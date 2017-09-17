@@ -17,11 +17,46 @@ module Arrow
     class << self
       def build(values)
         builder = new
-        values.each do |value|
-          if value.nil?
-            builder.append_null
-          else
-            builder.append(value)
+        if builder.respond_to?(:append_values)
+          start_index = 0
+          current_index = 0
+          status = :value
+          values.each do |value|
+            if value.nil?
+              if status == :value
+                if start_index != current_index
+                  builder.append_values(values[start_index...current_index])
+                  start_index = current_index
+                end
+                status = :null
+              end
+            else
+              if status == :null
+                builder.append_nulls(current_index - start_index)
+                start_index = current_index
+                status = :value
+              end
+            end
+            current_index += 1
+          end
+          if start_index != current_index
+            if status == :value
+              if start_index == 0 and current_index == values.size
+                builder.append_values(values)
+              else
+                builder.append_values(values[start_index...current_index])
+              end
+            else
+              builder.append_nulls(current_index - start_index)
+            end
+          end
+        else
+          values.each do |value|
+            if value.nil?
+              builder.append_null
+            else
+              builder.append(value)
+            end
           end
         end
         builder.finish
