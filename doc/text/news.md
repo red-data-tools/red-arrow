@@ -1,5 +1,15 @@
 # News
 
+## 0.7.0 - 2017-09-19
+
+### Improvements
+
+  * `Arrow::Array.new`: Improved performance.
+
+### Fixes
+
+  * `Arrow::Buffer`: Fixed a crash on GC.
+
 ## 0.4.0 - 2017-05-18
 
 ### Improvements
