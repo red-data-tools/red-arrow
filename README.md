@@ -50,7 +50,8 @@ require "arrow"
 
 ## License
 
-Apache License 2.0. See doc/text/apache-2.0.txt for details.
+Apache License 2.0. See `doc/text/apache-2.0.txt` and `NOTICE` for
+details.
 
 (Kouhei Sutou has a right to change the license including contributed
 patches.)

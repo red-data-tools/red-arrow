@@ -38,6 +38,7 @@ Gem::Specification.new do |spec|
   spec.files = ["README.md", "Rakefile", "Gemfile", "#{spec.name}.gemspec"]
   spec.files += [".yardopts"]
   spec.files += Dir.glob("lib/**/*.rb")
+  spec.files += Dir.glob("image/*.*")
   spec.files += Dir.glob("doc/text/*")
   spec.test_files += Dir.glob("test/**/*")
   spec.extensions = ["dependency-check/Rakefile"]
