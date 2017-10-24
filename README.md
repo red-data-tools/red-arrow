@@ -18,6 +18,16 @@ Arrow GLib is a C wrapper for [Arrow C++](https://github.com/apache/arrow/tree/m
 
 gobject-introspection gem is a Ruby bindings of GObject Introspection. Red Arrow uses GObject Introspection via gobject-introspection gem.
 
+## Before Install
+### Ubuntu
+
+If you want to use Ruby packages for Ubuntu 16.04 LTS. 
+
+```text
+% sudo apt install ruby ruby-dev
+% gem update
+```
+
 ## Install
 
 Install Arrow GLib before install Red Arrow. Use [packages.red-data-tools.org](https://github.com/red-data-tools/packages.red-data-tools.org) for installing Arrow GLib.
