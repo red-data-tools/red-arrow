@@ -8,7 +8,7 @@ Red Arrow
 
 Red Arrow is a Ruby bindings of Apache Arrow. Red Arrow is based on GObject Introspection.
 
-[Apache Arrow](https://arrow.apache.org/) is an in-memory columnar data store. It's used by many products for data analytics.
+[packages.red-data-tools.org]( https://github.com/red-data-tools/packages.red-data-tools.org) is an in-memory columnar data store. It's used by many products for data analytics.
 
 [GObject Introspection](https://wiki.gnome.org/action/show/Projects/GObjectIntrospection) is a middleware for language bindings of C library. GObject Introspection can generate language bindings automatically at runtime.
 
