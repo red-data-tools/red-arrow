@@ -16,6 +16,10 @@ module Arrow
   class Column
     include Enumerable
 
+    def [](i)
+      data[i]
+    end
+
     def each(&block)
       return to_enum(__method__) unless block_given?
 

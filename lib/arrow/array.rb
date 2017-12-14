@@ -28,13 +28,17 @@ module Arrow
       end
     end
 
+    def [](i)
+      if null?(i)
+        nil
+      else
+        get_value(i)
+      end
+    end
+
     def each
       length.times do |i|
-        if null?(i)
-          yield(nil)
-        else
-          yield(self[i])
-        end
+        yield(self[i])
       end
     end
 

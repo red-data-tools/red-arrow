@@ -16,6 +16,15 @@ module Arrow
   class ChunkedArray
     include Enumerable
 
+    def [](i)
+      n_chunks.times do |j|
+        array = get_chunk(j)
+        return array[i] if i < array.length
+        i -= array.length
+      end
+      nil
+    end
+
     def each(&block)
       return to_enum(__method__) unless block_given?
 

@@ -26,4 +26,10 @@ class ArrayTest < Test::Unit::TestCase
     assert_equal([true, false, nil, true],
                  array.to_a)
   end
+
+  test("#[]") do
+    array = Arrow::BooleanArray.new([true, false, nil, true])
+    assert_equal([true, false, nil, true],
+                 [array[0], array[1], array[2], array[3]])
+  end
 end
