@@ -34,5 +34,12 @@ module Arrow
         yield(record_batch)
       end
     end
+
+    def inspect
+      inspected = super
+      inspected << "\n"
+      formatter = TableFormatter.new(self)
+      inspected << formatter.format
+    end
   end
 end

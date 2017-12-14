@@ -37,6 +37,7 @@ module Arrow
       require "arrow/field"
       require "arrow/record-batch"
       require "arrow/table"
+      require "arrow/table-formatter"
       require "arrow/tensor"
       require "arrow/timestamp-array"
 
