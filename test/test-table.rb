@@ -31,6 +31,9 @@ class TableTest < Test::Unit::TestCase
   end
 
   test("#each_record_batch") do
+    unless Arrow.const_defined?(:TableBatchReader)
+      omit("Arrow::TableBatchReader is needed")
+    end
     fields = [
       Arrow::Field.new("count", :uint32),
       Arrow::Field.new("visible", :boolean),
