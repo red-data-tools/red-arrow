@@ -29,4 +29,25 @@ class TableTest < Test::Unit::TestCase
     assert_equal(["count", "visible"],
                  table.columns.collect(&:name))
   end
+
+  test("#each_record_batch") do
+    fields = [
+      Arrow::Field.new("count", :uint32),
+      Arrow::Field.new("visible", :boolean),
+    ]
+    schema = Arrow::Schema.new(fields)
+    arrays = [
+      Arrow::UInt32Array.new([1, 2, 4, 8]),
+      Arrow::BooleanArray.new([true, false, nil, true]),
+    ]
+    columns = [
+      Arrow::Column.new(fields[0], arrays[0]),
+      Arrow::Column.new(fields[1], arrays[1]),
+    ]
+    table = Arrow::Table.new(schema, columns)
+    assert_equal([
+                   Arrow::RecordBatch.new(schema, 4, arrays),
+                 ],
+                 table.each_record_batch.to_a)
+  end
 end

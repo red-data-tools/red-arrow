@@ -14,7 +14,7 @@
 
 module Arrow
   class Table
-    def each_column(&block)
+    def each_column
       return to_enum(__method__) unless block_given?
 
       n_columns.times do |i|
@@ -24,6 +24,15 @@ module Arrow
 
     def columns
       each_column.to_a
+    end
+
+    def each_record_batch
+      return to_enum(__method__) unless block_given?
+
+      reader = TableBatchReader.new(self)
+      while record_batch = reader.read_next
+        yield(record_batch)
+      end
     end
   end
 end
