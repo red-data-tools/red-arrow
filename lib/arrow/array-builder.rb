@@ -17,50 +17,54 @@ module Arrow
     class << self
       def build(values)
         builder = new
-        if builder.respond_to?(:append_values)
-          start_index = 0
-          current_index = 0
-          status = :value
-          values.each do |value|
-            if value.nil?
-              if status == :value
-                if start_index != current_index
-                  builder.append_values(values[start_index...current_index])
-                  start_index = current_index
-                end
-                status = :null
-              end
-            else
-              if status == :null
-                builder.append_nulls(current_index - start_index)
-                start_index = current_index
-                status = :value
-              end
-            end
-            current_index += 1
-          end
-          if start_index != current_index
+        builder.build(values)
+      end
+    end
+
+    def build(values)
+      if respond_to?(:append_values)
+        start_index = 0
+        current_index = 0
+        status = :value
+        values.each do |value|
+          if value.nil?
             if status == :value
-              if start_index == 0 and current_index == values.size
-                builder.append_values(values)
-              else
-                builder.append_values(values[start_index...current_index])
+              if start_index != current_index
+                append_values(values[start_index...current_index])
+                start_index = current_index
               end
-            else
-              builder.append_nulls(current_index - start_index)
+              status = :null
+            end
+          else
+            if status == :null
+              append_nulls(current_index - start_index)
+              start_index = current_index
+              status = :value
             end
           end
-        else
-          values.each do |value|
-            if value.nil?
-              builder.append_null
+          current_index += 1
+        end
+        if start_index != current_index
+          if status == :value
+            if start_index == 0 and current_index == values.size
+              append_values(values)
             else
-              builder.append(value)
+              append_values(values[start_index...current_index])
             end
+          else
+            append_nulls(current_index - start_index)
           end
         end
-        builder.finish
+      else
+        values.each do |value|
+          if value.nil?
+            append_null
+          else
+            append(value)
+          end
+        end
       end
+      finish
     end
   end
 end
