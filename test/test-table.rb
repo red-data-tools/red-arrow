@@ -30,27 +30,43 @@ class TableTest < Test::Unit::TestCase
                  table.columns.collect(&:name))
   end
 
-  test("#each_record_batch") do
-    unless Arrow.const_defined?(:TableBatchReader)
-      omit("Arrow::TableBatchReader is needed")
-    end
+  test("#slice") do
     fields = [
       Arrow::Field.new("count", :uint32),
       Arrow::Field.new("visible", :boolean),
     ]
     schema = Arrow::Schema.new(fields)
-    arrays = [
-      Arrow::UInt32Array.new([1, 2, 4, 8]),
-      Arrow::BooleanArray.new([true, false, nil, true]),
-    ]
+    arrays = []
+    arrays << Arrow::ChunkedArray.new([
+                                        Arrow::UInt32Array.new([1, 2]),
+                                        Arrow::UInt32Array.new([4, 8, 16]),
+                                        Arrow::UInt32Array.new([32, 64]),
+                                        Arrow::UInt32Array.new([128]),
+                                      ])
+    arrays << Arrow::ChunkedArray.new([
+                                        Arrow::BooleanArray.new([
+                                                                  true,
+                                                                  false,
+                                                                  nil,
+                                                                ]),
+                                        Arrow::BooleanArray.new([true]),
+                                        Arrow::BooleanArray.new([true, false]),
+                                        Arrow::BooleanArray.new([nil]),
+                                        Arrow::BooleanArray.new([nil]),
+                                      ])
     columns = [
       Arrow::Column.new(fields[0], arrays[0]),
       Arrow::Column.new(fields[1], arrays[1]),
     ]
     table = Arrow::Table.new(schema, columns)
-    assert_equal([
-                   Arrow::RecordBatch.new(schema, 4, arrays),
-                 ],
-                 table.each_record_batch.to_a)
+    target_rows = Arrow::BooleanArray.new([nil, true, true, false, true, false, true, true])
+    assert_equal(<<-TABLE, table.slice(target_rows).to_s)
+	count	visible
+0	    2	  false
+1	    4	       
+2	   16	   true
+3	   64	       
+4	  128	       
+    TABLE
   end
 end

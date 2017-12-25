@@ -28,9 +28,16 @@ module Arrow
     def each(&block)
       return to_enum(__method__) unless block_given?
 
-      n_chunks.times do |i|
-        array = get_chunk(i)
+      each_chunk do |array|
         array.each(&block)
+      end
+    end
+
+    def each_chunk
+      return to_enum(__method__) unless block_given?
+
+      n_chunks.times do |i|
+        yield(get_chunk(i))
       end
     end
   end

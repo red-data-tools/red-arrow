@@ -23,7 +23,7 @@ module Arrow
     end
 
     def columns
-      each_column.to_a
+      @columns ||= each_column.to_a
     end
 
     def each_record_batch
@@ -35,11 +35,76 @@ module Arrow
       end
     end
 
-    def inspect
-      inspected = super
-      inspected << "\n"
+    def slice(target_rows)
+      target_ranges = []
+      in_target = false
+      target_start = nil
+      target_rows.each_with_index do |is_target, i|
+        if is_target
+          unless in_target
+            target_start = i
+            in_target = true
+          end
+        else
+          if in_target
+            target_ranges << [target_start, i - 1]
+            target_start = nil
+            in_target = false
+          end
+        end
+      end
+      if in_target
+        target_ranges << [target_start, target_rows.length - 1]
+      end
+
+      sliced_columns = each_column.collect do |column|
+        chunks = []
+        arrays = column.data.each_chunk.to_a
+        offset = 0
+        offset_in_array = 0
+        target_ranges.each do |from, to|
+          range_size = to - from + 1
+          while range_size > 0
+            while offset + arrays.first.length - offset_in_array < from
+              offset += arrays.first.length - offset_in_array
+              arrays.shift
+              offset_in_array = 0
+            end
+            if offset < from
+              skipped_size = from - offset
+              offset += skipped_size
+              offset_in_array += skipped_size
+            end
+            array = arrays.first
+            array_length = array.length
+            rest_length = array_length - offset_in_array
+            if rest_length <= range_size
+              chunks << array.slice(offset_in_array, array_length)
+              offset += rest_length
+              range_size -= rest_length
+              offset_in_array = 0
+              arrays.shift
+            else
+              chunks << array.slice(offset_in_array, range_size)
+              offset += range_size
+              offset_in_array += range_size
+              range_size = 0
+            end
+          end
+        end
+        Column.new(column.field, ChunkedArray.new(chunks))
+      end
+
+      self.class.new(schema, sliced_columns)
+    end
+
+    def to_s
       formatter = TableFormatter.new(self)
-      inspected << formatter.format
+      formatter.format
+    end
+
+    def inspect
+      "#{super}\n#{to_s}"
     end
   end
 end
