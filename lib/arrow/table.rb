@@ -132,6 +132,19 @@ module Arrow
       "#{super}\n#{to_s}"
     end
 
+    def respond_to_missing?(name, include_private)
+      return true if find_column(name)
+      super
+    end
+
+    def method_missing(name, *args, &block)
+      if args.empty?
+        column = find_column(name)
+        return column if column
+      end
+      super
+    end
+
     private
     def find_column(name)
       name = name.to_s

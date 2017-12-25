@@ -70,4 +70,8 @@ class TableTest < Test::Unit::TestCase
                    @table["visible", :count].to_s)
     end
   end
+
+  test("column name getter") do
+    assert_equal(@visible_column, @table.visible)
+  end
 end
