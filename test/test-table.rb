@@ -36,24 +36,23 @@ class TableTest < Test::Unit::TestCase
       Arrow::Field.new("visible", :boolean),
     ]
     schema = Arrow::Schema.new(fields)
-    arrays = []
-    arrays << Arrow::ChunkedArray.new([
-                                        Arrow::UInt32Array.new([1, 2]),
-                                        Arrow::UInt32Array.new([4, 8, 16]),
-                                        Arrow::UInt32Array.new([32, 64]),
-                                        Arrow::UInt32Array.new([128]),
-                                      ])
-    arrays << Arrow::ChunkedArray.new([
-                                        Arrow::BooleanArray.new([
-                                                                  true,
-                                                                  false,
-                                                                  nil,
-                                                                ]),
-                                        Arrow::BooleanArray.new([true]),
-                                        Arrow::BooleanArray.new([true, false]),
-                                        Arrow::BooleanArray.new([nil]),
-                                        Arrow::BooleanArray.new([nil]),
-                                      ])
+    count_arrays = [
+      Arrow::UInt32Array.new([1, 2]),
+      Arrow::UInt32Array.new([4, 8, 16]),
+      Arrow::UInt32Array.new([32, 64]),
+      Arrow::UInt32Array.new([128]),
+    ]
+    visible_arrays = [
+      Arrow::BooleanArray.new([true, false, nil]),
+      Arrow::BooleanArray.new([true]),
+      Arrow::BooleanArray.new([true, false]),
+      Arrow::BooleanArray.new([nil]),
+      Arrow::BooleanArray.new([nil]),
+    ]
+    arrays = [
+      Arrow::ChunkedArray.new(count_arrays),
+      Arrow::ChunkedArray.new(visible_arrays),
+    ]
     columns = [
       Arrow::Column.new(fields[0], arrays[0]),
       Arrow::Column.new(fields[1], arrays[1]),
@@ -68,5 +67,45 @@ class TableTest < Test::Unit::TestCase
 3	   64	       
 4	  128	       
     TABLE
+  end
+
+  sub_test_case("#[]") do
+    setup do
+      @count_field = Arrow::Field.new("count", :uint32)
+      @visible_field = Arrow::Field.new("visible", :boolean)
+      schema = Arrow::Schema.new([@count_field, @visible_field])
+      count_arrays = [
+        Arrow::UInt32Array.new([1, 2]),
+        Arrow::UInt32Array.new([4, 8, 16]),
+        Arrow::UInt32Array.new([32, 64]),
+        Arrow::UInt32Array.new([128]),
+      ]
+      visible_arrays = [
+        Arrow::BooleanArray.new([true, false, nil]),
+        Arrow::BooleanArray.new([true]),
+        Arrow::BooleanArray.new([true, false]),
+        Arrow::BooleanArray.new([nil]),
+        Arrow::BooleanArray.new([nil]),
+      ]
+      @count_array = Arrow::ChunkedArray.new(count_arrays)
+      @visible_array = Arrow::ChunkedArray.new(visible_arrays)
+      @count_column = Arrow::Column.new(@count_field, @count_array)
+      @visible_column = Arrow::Column.new(@visible_field, @visible_array)
+      @table = Arrow::Table.new(schema, [@count_column, @visible_column])
+    end
+
+    test("[String]") do
+      assert_equal(@count_column, @table["count"])
+    end
+
+    test("[Symbol]") do
+      assert_equal(@visible_column, @table[:visible])
+    end
+
+    test("[String, Symbol]") do
+      assert_equal(Arrow::Table.new(@table.schema,
+                                    [@visible_column, @count_column]).to_s,
+                   @table["visible", :count].to_s)
+    end
   end
 end

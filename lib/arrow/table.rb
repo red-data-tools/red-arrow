@@ -35,6 +35,31 @@ module Arrow
       end
     end
 
+    def [](*args)
+      if args.size == 1
+        case args[0]
+        when String, Symbol
+          find_column(args[0])
+        when BooleanArray
+          slice(args[0])
+        else
+          message = "#{self.class}\#[#{args[0].inspect}]: " +
+            "Must be String, Symbol or Arrow::BooleanArray"
+          raise ArgumentError, message
+        end
+      else
+        new_columns = args.collect do |column_name|
+          column = find_column(column_name)
+          if column.nil?
+            message = "Unknown column: <#{column_name.inspect}>: #{inspect}"
+            raise ArgumentError, message
+          end
+          column
+        end
+        self.class.new(schema, new_columns)
+      end
+    end
+
     def slice(target_rows)
       target_ranges = []
       in_target = false
@@ -105,6 +130,14 @@ module Arrow
 
     def inspect
       "#{super}\n#{to_s}"
+    end
+
+    private
+    def find_column(name)
+      name = name.to_s
+      columns.find do |column|
+        column.name == name
+      end
     end
   end
 end
