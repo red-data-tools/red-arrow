@@ -1,14 +1,14 @@
-FROM ruby:2.4.1
+FROM ruby:2.4-stretch
 
 MAINTAINER Kouhei Sutou <kou@clear-code.com>
 
 RUN \
   apt update && \
   apt install -y apt-transport-https && \
-  echo "deb https://packages.groonga.org/debian/ jessie main" > \
-    /etc/apt/sources.list.d/groonga.list && \
-  apt update && \
-  apt install -y --allow-unauthenticated groonga-keyring && \
+  echo "deb https://packages.red-data-tools.org/debian/ stretch main" > \
+    /etc/apt/sources.list.d/red-data-tools.list && \
+  apt update --allow-insecure-repositories && \
+  apt install -y --allow-unauthenticated red-data-tools-keyring && \
   apt update
 
 RUN mkdir /app
