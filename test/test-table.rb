@@ -42,17 +42,64 @@ class TableTest < Test::Unit::TestCase
                  @table.columns.collect(&:name))
   end
 
-  test("#slice") do
-    target_rows_raw = [nil, true, true, false, true, false, true, true]
-    target_rows = Arrow::BooleanArray.new(target_rows_raw)
-    assert_equal(<<-TABLE, @table.slice(target_rows).to_s)
+  sub_test_case("#slice") do
+    test("Arrow::BooleanArray") do
+      target_rows_raw = [nil, true, true, false, true, false, true, true]
+      target_rows = Arrow::BooleanArray.new(target_rows_raw)
+      assert_equal(<<-TABLE, @table.slice(target_rows).to_s)
 	count	visible
 0	    2	  false
 1	    4	       
 2	   16	   true
 3	   64	       
 4	  128	       
-    TABLE
+      TABLE
+    end
+
+    test("Integer") do
+      assert_equal(<<-TABLE, @table.slice(2).to_s)
+	count	visible
+0	    4	       
+      TABLE
+    end
+
+    test("Range: include end") do
+      assert_equal(<<-TABLE, @table.slice(2..4).to_s)
+	count	visible
+0	    4	       
+1	    8	   true
+2	   16	   true
+      TABLE
+    end
+
+    test("Range: exclude end") do
+      assert_equal(<<-TABLE, @table.slice(2...4).to_s)
+	count	visible
+0	    4	       
+1	    8	   true
+      TABLE
+    end
+
+    test("[Integer]") do
+      assert_equal(<<-TABLE, @table.slice([0, 2, 4]).to_s)
+	count	visible
+0	    1	   true
+1	    4	       
+2	   16	   true
+      TABLE
+    end
+
+    test("[Range]") do
+      assert_equal(<<-TABLE, @table.slice([0..2, 4...7]).to_s)
+	count	visible
+0	    1	   true
+1	    2	  false
+2	    4	       
+3	   16	   true
+4	   32	  false
+5	   64	       
+      TABLE
+    end
   end
 
   sub_test_case("#[]") do
