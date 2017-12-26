@@ -14,6 +14,24 @@
 
 module Arrow
   class Table
+    alias_method :initialize_raw, :initialize
+    def initialize(schema_or_raw_table, columns=nil)
+      if columns.nil?
+        raw_table = schema_or_raw_table
+        fields = []
+        columns = []
+        raw_table.each do |name, array|
+          field = Field.new(name.to_s, array.value_data_type)
+          fields << field
+          columns << Column.new(field, array)
+        end
+        schema = Schema.new(fields)
+      else
+        schema = schema_or_raw_table
+      end
+      initialize_raw(schema, columns)
+    end
+
     def each_column
       return to_enum(__method__) unless block_given?
 
@@ -95,6 +113,54 @@ module Arrow
         end
         slice_by_ranges(target_ranges)
       end
+    end
+
+    # TODO
+    #
+    # @return [Arrow::Table]
+    def merge(other)
+      added_columns = {}
+      removed_columns = {}
+
+      case other
+      when Hash
+        other.each do |name, value|
+          name = name.to_s
+          if value
+            added_columns[name] = ensure_column(name, value)
+          else
+            removed_columns[name] = true
+          end
+        end
+      when Table
+        added_columns = {}
+        other.columns.each do |column|
+          added_columns[column.name] = column
+        end
+      else
+        message = "merge target must be Hash or Arrow::Table: " +
+          "<#{other.inspect}>: #{inspect}"
+        raise ArgumentError, message
+      end
+
+      new_columns = []
+      columns.each do |column|
+        column_name = column.name
+        new_column = added_columns.delete(column_name)
+        if new_column
+          new_columns << new_column
+          next
+        end
+        next if removed_columns.key?(column_name)
+        new_columns << column
+      end
+      added_columns.each do |name, new_column|
+        new_columns << new_column
+      end
+      new_fields = new_columns.collect do |new_column|
+        new_column.field
+      end
+      self.class.new(Schema.new(new_fields), new_columns)
     end
 
     def to_s
@@ -181,6 +247,20 @@ module Arrow
       end
 
       self.class.new(schema, sliced_columns)
+    end
+
+    def ensure_column(name, data)
+      case data
+      when Array
+        field = Field.new(name, data.value_data_type)
+        Column.new(field, data)
+      when Column
+        data
+      else
+        message = "column must be Arrow::Array or Arrow::Column: " +
+          "<#{name}>: <#{data.inspect}>: #{inspect}"
+        raise ArgumentError, message
+      end
     end
   end
 end

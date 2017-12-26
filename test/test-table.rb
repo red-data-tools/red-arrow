@@ -118,6 +118,88 @@ class TableTest < Test::Unit::TestCase
     end
   end
 
+  sub_test_case("#merge") do
+    sub_test_case("Hash") do
+      test("add") do
+        name_array = Arrow::StringArray.new(["a", "b", "c", "d", "e", "f", "g", "h"])
+        assert_equal(<<-TABLE, @table.merge(:name => name_array).to_s)
+	count	visible	name
+0	    1	   true	   a
+1	    2	  false	   b
+2	    4	       	   c
+3	    8	   true	   d
+4	   16	   true	   e
+5	   32	  false	   f
+6	   64	       	   g
+7	  128	       	   h
+        TABLE
+      end
+
+      test("remove") do
+        assert_equal(<<-TABLE, @table.merge(:visible => nil).to_s)
+	count
+0	    1
+1	    2
+2	    4
+3	    8
+4	   16
+5	   32
+6	   64
+7	  128
+        TABLE
+      end
+
+      test("replace") do
+        visible_array = Arrow::Int32Array.new([1] * @visible_array.length)
+        assert_equal(<<-TABLE, @table.merge(:visible => visible_array).to_s)
+	count	visible
+0	    1	      1
+1	    2	      1
+2	    4	      1
+3	    8	      1
+4	   16	      1
+5	   32	      1
+6	   64	      1
+7	  128	      1
+        TABLE
+      end
+    end
+
+    sub_test_case("Arrow::Table") do
+      test("add") do
+        name_array = Arrow::StringArray.new(["a", "b", "c", "d", "e", "f", "g", "h"])
+        table = Arrow::Table.new("name" => name_array)
+        assert_equal(<<-TABLE, @table.merge(table).to_s)
+	count	visible	name
+0	    1	   true	   a
+1	    2	  false	   b
+2	    4	       	   c
+3	    8	   true	   d
+4	   16	   true	   e
+5	   32	  false	   f
+6	   64	       	   g
+7	  128	       	   h
+        TABLE
+      end
+
+      test("replace") do
+        visible_array = Arrow::Int32Array.new([1] * @visible_array.length)
+        table = Arrow::Table.new("visible" => visible_array)
+        assert_equal(<<-TABLE, @table.merge(table).to_s)
+	count	visible
+0	    1	      1
+1	    2	      1
+2	    4	      1
+3	    8	      1
+4	   16	      1
+5	   32	      1
+6	   64	      1
+7	  128	      1
+        TABLE
+      end
+    end
+  end
+
   test("column name getter") do
     assert_equal(@visible_column, @table.visible)
   end
