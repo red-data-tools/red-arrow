@@ -196,7 +196,7 @@ module Arrow
     end
 
     def slice_by_ranges(ranges)
-      sliced_columns = each_column.collect do |column|
+      sliced_columns = columns.collect do |column|
         chunks = []
         arrays = column.data.each_chunk.to_a
         offset = 0
