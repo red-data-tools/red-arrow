@@ -81,6 +81,8 @@ module Arrow
 
     # TODO
     #
+    # TODO: slicer -> *slicers? like Hash#slice
+    #
     # @return [Arrow::Table]
     def slice(slicer)
       case slicer
