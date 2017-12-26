@@ -35,16 +35,17 @@ module Arrow
       end
     end
 
+    # TODO
+    #
+    # @return [Arrow::Column, Array<Arrow::Column>, nil]
     def [](*args)
       if args.size == 1
         case args[0]
         when String, Symbol
           find_column(args[0])
-        when Integer, Range, BooleanArray
-          slice(args[0])
         else
           message = "#{self.class}\#[#{args[0].inspect}]: " +
-            "Must be String, Symbol or Arrow::BooleanArray"
+            "Must be String or Symbol"
           raise ArgumentError, message
         end
       else
@@ -60,6 +61,9 @@ module Arrow
       end
     end
 
+    # TODO
+    #
+    # @return [Arrow::Table]
     def slice(slicer)
       case slicer
       when Integer
