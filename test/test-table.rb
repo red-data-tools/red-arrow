@@ -80,24 +80,21 @@ class TableTest < Test::Unit::TestCase
       TABLE
     end
 
-    test("[Integer]") do
-      assert_equal(<<-TABLE, @table.slice([0, 2, 4]).to_s)
-	count	visible
-0	    1	   true
-1	    4	       
-2	   16	   true
-      TABLE
-    end
-
-    test("[Range]") do
-      assert_equal(<<-TABLE, @table.slice([0..2, 4...7]).to_s)
+    test("[from, to]") do
+      assert_equal(<<-TABLE, @table.slice([0, 2]).to_s)
 	count	visible
 0	    1	   true
 1	    2	  false
-2	    4	       
-3	   16	   true
-4	   32	  false
-5	   64	       
+      TABLE
+    end
+
+    test("Integer, Range, ...") do
+      assert_equal(<<-TABLE, @table.slice(0, 4...7).to_s)
+	count	visible
+0	    1	   true
+1	   16	   true
+2	   32	  false
+3	   64	       
       TABLE
     end
   end

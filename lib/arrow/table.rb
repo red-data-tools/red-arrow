@@ -81,40 +81,49 @@ module Arrow
 
     # TODO
     #
-    # TODO: slicer -> *slicers? like Hash#slice
-    #
     # @return [Arrow::Table]
-    def slice(slicer)
-      case slicer
-      when Integer
-        slice_by_ranges([slicer])
-      when Range
-        slice_by_ranges([slicer])
-      when ::Array
-        slice_by_ranges(slicer)
-      when BooleanArray
-        target_ranges = []
-        in_target = false
-        target_start = nil
-        slicer.each_with_index do |is_target, i|
-          if is_target
-            unless in_target
-              target_start = i
-              in_target = true
-            end
-          else
-            if in_target
-              target_ranges << [target_start, i - 1]
-              target_start = nil
-              in_target = false
+    def slice(*slicers)
+      ranges = []
+      slicers.each do |slicer|
+        case slicer
+        when Integer
+          ranges << [slicer, slicer]
+        when Range
+          from = slicer.first
+          to = slicer.last
+          to -= 1 if slicer.exclude_end?
+          ranges << [from, to]
+        when ::Array
+          from = slicer[0]
+          to = from + slicer[1] - 1
+          ranges << [from, to]
+        when BooleanArray
+          in_target = false
+          target_start = nil
+          slicer.each_with_index do |is_target, i|
+            if is_target
+              unless in_target
+                target_start = i
+                in_target = true
+              end
+            else
+              if in_target
+                ranges << [target_start, i - 1]
+                target_start = nil
+                in_target = false
+              end
             end
           end
+          if in_target
+            ranges << [target_start, slicer.length - 1]
+          end
+        else
+          message = "slicer must be Integer, Range, [from, to] or " +
+            "Arrow::BooleanArray: #{slicer.inspect}"
+          raise ArgumentError, message
         end
-        if in_target
-          target_ranges << [target_start, slicer.length - 1]
-        end
-        slice_by_ranges(target_ranges)
       end
+      slice_by_ranges(ranges)
     end
 
     # TODO
@@ -201,21 +210,7 @@ module Arrow
         arrays = column.data.each_chunk.to_a
         offset = 0
         offset_in_array = 0
-        ranges.each do |range|
-          case range
-          when Integer
-            from = to = range
-          when Range
-            from = range.first
-            to = range.last
-            to -= 1 if range.exclude_end?
-          when ::Array
-            from, to, = range
-          else
-            message = "slice range must be Integer, Range or [from, to]: #{range.inspect}"
-            raise ArgumentError, message
-          end
-
+        ranges.each do |from, to|
           range_size = to - from + 1
           while range_size > 0
             while offset + arrays.first.length - offset_in_array < from
