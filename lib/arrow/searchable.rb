@@ -13,18 +13,24 @@
 # limitations under the License.
 
 module Arrow
-  class Column
-    include Enumerable
-    prepend Searchable
-
-    def [](i)
-      data[i]
-    end
-
-    def each(&block)
-      return to_enum(__method__) unless block_given?
-
-      data.each(&block)
+  module Searchable
+    def ==(other)
+      case other
+      when self.class
+        super
+      when nil
+        raw_array = collect(&:nil?)
+        BooleanArray.new(raw_array)
+      else
+        raw_array = collect do |value|
+          if value.nil?
+            nil
+          else
+            other == value
+          end
+        end
+        BooleanArray.new(raw_array)
+      end
     end
   end
 end

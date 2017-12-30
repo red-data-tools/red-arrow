@@ -28,6 +28,8 @@ module Arrow
     end
 
     def require_libraries
+      require "arrow/searchable"
+
       require "arrow/array"
       require "arrow/array-builder"
       require "arrow/buffer"

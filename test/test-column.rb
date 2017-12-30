@@ -14,14 +14,40 @@
 
 class ColumnTest < Test::Unit::TestCase
   test("#each") do
-    arrayes = [
+    arrays = [
       Arrow::BooleanArray.new([true, false]),
       Arrow::BooleanArray.new([nil, true]),
     ]
-    chunked_array = Arrow::ChunkedArray.new(arrayes)
+    chunked_array = Arrow::ChunkedArray.new(arrays)
     column = Arrow::Column.new(Arrow::Field.new("visible", :boolean),
                                chunked_array)
     assert_equal([true, false, nil, true],
                  column.to_a)
+  end
+
+  sub_test_case("#==") do
+    def setup
+      @scores = Arrow::Column.new(Arrow::Field.new("score", :int32),
+                                  Arrow::Int32Array.new([10, -1, nil, 2, 29]))
+    end
+
+    test("Column") do
+      same_value_scores =
+        Arrow::Column.new(Arrow::Field.new("score", :int32),
+                          Arrow::Int32Array.new(@scores.to_a))
+      assert do
+        @scores == same_value_scores
+      end
+    end
+
+    test("number") do
+      assert_equal(Arrow::BooleanArray.new([false, true, nil, false, false]),
+                   @scores == -1)
+    end
+
+    test("nil") do
+      assert_equal(Arrow::BooleanArray.new([false, false, true, false, false]),
+                   @scores == nil)
+    end
   end
 end
