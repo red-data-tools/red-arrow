@@ -1,4 +1,4 @@
-# Copyright 2017 Kouhei Sutou <kou@clear-code.com>
+# Copyright 2017-2018 Kouhei Sutou <kou@clear-code.com>
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -48,9 +48,9 @@ class TableTest < Test::Unit::TestCase
       target_rows = Arrow::BooleanArray.new(target_rows_raw)
       assert_equal(<<-TABLE, @table.slice(target_rows).to_s)
 	count	visible
-0	    2	  false
+0	    2	false  
 1	    4	       
-2	   16	   true
+2	   16	true   
 3	   64	       
 4	  128	       
       TABLE
@@ -67,8 +67,8 @@ class TableTest < Test::Unit::TestCase
       assert_equal(<<-TABLE, @table.slice(2..4).to_s)
 	count	visible
 0	    4	       
-1	    8	   true
-2	   16	   true
+1	    8	true   
+2	   16	true   
       TABLE
     end
 
@@ -76,24 +76,24 @@ class TableTest < Test::Unit::TestCase
       assert_equal(<<-TABLE, @table.slice(2...4).to_s)
 	count	visible
 0	    4	       
-1	    8	   true
+1	    8	true   
       TABLE
     end
 
     test("[from, to]") do
       assert_equal(<<-TABLE, @table.slice([0, 2]).to_s)
 	count	visible
-0	    1	   true
-1	    2	  false
+0	    1	true   
+1	    2	false  
       TABLE
     end
 
     test("Integer, Range, ...") do
       assert_equal(<<-TABLE, @table.slice(0, 4...7).to_s)
 	count	visible
-0	    1	   true
-1	   16	   true
-2	   32	  false
+0	    1	true   
+1	   16	true   
+2	   32	false  
 3	   64	       
       TABLE
     end
@@ -121,14 +121,14 @@ class TableTest < Test::Unit::TestCase
         name_array = Arrow::StringArray.new(["a", "b", "c", "d", "e", "f", "g", "h"])
         assert_equal(<<-TABLE, @table.merge(:name => name_array).to_s)
 	count	visible	name
-0	    1	   true	   a
-1	    2	  false	   b
-2	    4	       	   c
-3	    8	   true	   d
-4	   16	   true	   e
-5	   32	  false	   f
-6	   64	       	   g
-7	  128	       	   h
+0	    1	true   	a   
+1	    2	false  	b   
+2	    4	       	c   
+3	    8	true   	d   
+4	   16	true   	e   
+5	   32	false  	f   
+6	   64	       	g   
+7	  128	       	h   
         TABLE
       end
 
@@ -168,14 +168,14 @@ class TableTest < Test::Unit::TestCase
         table = Arrow::Table.new("name" => name_array)
         assert_equal(<<-TABLE, @table.merge(table).to_s)
 	count	visible	name
-0	    1	   true	   a
-1	    2	  false	   b
-2	    4	       	   c
-3	    8	   true	   d
-4	   16	   true	   e
-5	   32	  false	   f
-6	   64	       	   g
-7	  128	       	   h
+0	    1	true   	a   
+1	    2	false  	b   
+2	    4	       	c   
+3	    8	true   	d   
+4	   16	true   	e   
+5	   32	false  	f   
+6	   64	       	g   
+7	  128	       	h   
         TABLE
       end
 

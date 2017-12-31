@@ -1,4 +1,4 @@
-# Copyright 2017 Kouhei Sutou <kou@clear-code.com>
+# Copyright 2017-2018 Kouhei Sutou <kou@clear-code.com>
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -21,7 +21,7 @@ class CSVReaderTest < Test::Unit::TestCase
       assert_equal(<<-TABLE, Arrow::CSVReader.read(data).to_s)
 	name	score
 0	alice	   10
-1	 bob	   29
+1	bob 	   29
 2	chris	   -1
       TABLE
     end
@@ -41,7 +41,7 @@ class CSVReaderTest < Test::Unit::TestCase
       assert_equal(<<-TABLE, Arrow::CSVReader.read(path).to_s)
 	name	score
 0	alice	   10
-1	 bob	   29
+1	bob 	   29
 2	chris	   -1
       TABLE
     end
@@ -61,7 +61,7 @@ class CSVReaderTest < Test::Unit::TestCase
       assert_equal(<<-TABLE, Arrow::CSVReader.read(path).to_s)
 	name	score
 0	alice	   10
-1	 bob	   29
+1	bob 	   29
 2	chris	   -1
       TABLE
     end
@@ -80,9 +80,9 @@ class CSVReaderTest < Test::Unit::TestCase
       CSV.open(fixture_path("with-header.csv").to_s, headers: true) do |csv|
         assert_equal(<<-TABLE, Arrow::CSVReader.read(csv).to_s)
 	name	score
-0	alice	   10
-1	 bob	   29
-2	chris	   -1
+0	alice	10   
+1	bob 	29   
+2	chris	-1   
         TABLE
       end
     end

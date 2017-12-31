@@ -1,4 +1,4 @@
-# Copyright 2017 Kouhei Sutou <kou@clear-code.com>
+# Copyright 2017-2018 Kouhei Sutou <kou@clear-code.com>
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -77,8 +77,10 @@ module Arrow
         value.iso8601
       when Float
         "%*f" % [[column.name.size, FLOAT_N_DIGITS].max, value]
+      when Integer
+        "%*d" % [column.name.size, value]
       else
-        "%*s" % [column.name.size, value.to_s]
+        "%-*s" % [column.name.size, value.to_s]
       end
     end
   end
