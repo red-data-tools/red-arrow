@@ -12,11 +12,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-require "arrow"
+module Helper
+  module Fixture
+    def fixture_dir
+      Pathname.new(__dir__).join("..", "fixture").expand_path
+    end
 
-require "pathname"
-require "tempfile"
-
-require "test-unit"
-
-require_relative "helper/fixture"
+    def fixture_path(*components)
+      fixture_dir.join(*components)
+    end
+  end
+end
