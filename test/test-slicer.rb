@@ -18,23 +18,79 @@ class SlicerTest < Test::Unit::TestCase
     @visible_field = Arrow::Field.new("visible", :boolean)
     schema = Arrow::Schema.new([@count_field, @visible_field])
     count_arrays = [
-      Arrow::UInt32Array.new([1, 2]),
+      Arrow::UInt32Array.new([0, 1, 2]),
       Arrow::UInt32Array.new([4, 8, 16]),
-      Arrow::UInt32Array.new([32, 64]),
-      Arrow::UInt32Array.new([128]),
+      Arrow::UInt32Array.new([32, 64, nil]),
+      Arrow::UInt32Array.new([256]),
     ]
     visible_arrays = [
-      Arrow::BooleanArray.new([true, false, nil]),
+      Arrow::BooleanArray.new([nil, true, false, nil]),
       Arrow::BooleanArray.new([true]),
       Arrow::BooleanArray.new([true, false]),
       Arrow::BooleanArray.new([nil]),
       Arrow::BooleanArray.new([nil]),
+      Arrow::BooleanArray.new([true]),
     ]
     @count_array = Arrow::ChunkedArray.new(count_arrays)
     @visible_array = Arrow::ChunkedArray.new(visible_arrays)
     @count_column = Arrow::Column.new(@count_field, @count_array)
     @visible_column = Arrow::Column.new(@visible_field, @visible_array)
     @table = Arrow::Table.new(schema, [@count_column, @visible_column])
+  end
+
+  sub_test_case("column") do
+    test("BooleanArray") do
+      sliced_table = @table.slice do |slicer|
+        slicer.visible
+      end
+      assert_equal(<<-TABLE, sliced_table.to_s)
+	count	visible
+0	    1	true   
+1	    8	true   
+2	   16	true   
+3	  256	true   
+      TABLE
+    end
+
+    test("not BooleanArray") do
+      sliced_table = @table.slice do |slicer|
+        slicer.count
+      end
+      assert_equal(<<-TABLE, sliced_table.to_s)
+	count	visible
+0	    1	true   
+1	    2	false  
+2	    4	       
+3	    8	true   
+4	   16	true   
+5	   32	false  
+6	   64	       
+7	  256	true   
+      TABLE
+    end
+  end
+
+  sub_test_case("!column") do
+    test("BooleanArray") do
+      sliced_table = @table.slice do |slicer|
+        !slicer.visible
+      end
+      assert_equal(<<-TABLE, sliced_table.to_s)
+	count	visible
+0	    2	false  
+1	   32	false  
+      TABLE
+    end
+
+    test("not BooleanArray") do
+      sliced_table = @table.slice do |slicer|
+        !slicer.count
+      end
+      assert_equal(<<-TABLE, sliced_table.to_s)
+	count	visible
+0	    0	       
+      TABLE
+    end
   end
 
   sub_test_case("column ==") do
@@ -44,9 +100,10 @@ class SlicerTest < Test::Unit::TestCase
       end
       assert_equal(<<-TABLE, sliced_table.to_s)
 	count	visible
-0	    4	       
-1	   64	       
-2	  128	       
+0	    0	       
+1	    4	       
+2	   64	       
+3	     	       
       TABLE
     end
 
@@ -59,6 +116,7 @@ class SlicerTest < Test::Unit::TestCase
 0	    1	true   
 1	    8	true   
 2	   16	true   
+3	  256	true   
       TABLE
     end
   end
@@ -75,6 +133,7 @@ class SlicerTest < Test::Unit::TestCase
 2	    8	true   
 3	   16	true   
 4	   32	false  
+5	  256	true   
       TABLE
     end
 
@@ -102,6 +161,7 @@ class SlicerTest < Test::Unit::TestCase
 2	    8	true   
 3	   16	true   
 4	   32	false  
+5	  256	true   
       TABLE
     end
 
@@ -123,10 +183,11 @@ class SlicerTest < Test::Unit::TestCase
     end
     assert_equal(<<-TABLE, sliced_table.to_s)
 	count	visible
-0	    1	true   
-1	    2	false  
-2	    4	       
-3	    8	true   
+0	    0	       
+1	    1	true   
+2	    2	false  
+3	    4	       
+4	    8	true   
     TABLE
   end
 
@@ -139,7 +200,7 @@ class SlicerTest < Test::Unit::TestCase
 0	   16	true   
 1	   32	false  
 2	   64	       
-3	  128	       
+3	  256	true   
     TABLE
   end
 
@@ -149,11 +210,12 @@ class SlicerTest < Test::Unit::TestCase
     end
     assert_equal(<<-TABLE, sliced_table.to_s)
 	count	visible
-0	    1	true   
-1	    2	false  
-2	    4	       
-3	    8	true   
-4	   16	true   
+0	    0	       
+1	    1	true   
+2	    2	false  
+3	    4	       
+4	    8	true   
+5	   16	true   
     TABLE
   end
 
@@ -165,7 +227,7 @@ class SlicerTest < Test::Unit::TestCase
 	count	visible
 0	   32	false  
 1	   64	       
-2	  128	       
+2	  256	true   
     TABLE
   end
 
@@ -177,7 +239,7 @@ class SlicerTest < Test::Unit::TestCase
 	count	visible
 0	   32	false  
 1	   64	       
-2	  128	       
+2	  256	true   
     TABLE
   end
 
@@ -187,11 +249,12 @@ class SlicerTest < Test::Unit::TestCase
     end
     assert_equal(<<-TABLE, sliced_table.to_s)
 	count	visible
-0	    1	true   
-1	    2	false  
-2	    4	       
-3	    8	true   
-4	   16	true   
+0	    0	       
+1	    1	true   
+2	    2	false  
+3	    4	       
+4	    8	true   
+5	   16	true   
     TABLE
   end
 
@@ -204,7 +267,7 @@ class SlicerTest < Test::Unit::TestCase
 0	   16	true   
 1	   32	false  
 2	   64	       
-3	  128	       
+3	  256	true   
     TABLE
   end
 
@@ -214,10 +277,11 @@ class SlicerTest < Test::Unit::TestCase
     end
     assert_equal(<<-TABLE, sliced_table.to_s)
 	count	visible
-0	    1	true   
-1	    2	false  
-2	    4	       
-3	    8	true   
+0	    0	       
+1	    1	true   
+2	    2	false  
+3	    4	       
+4	    8	true   
     TABLE
   end
 end

@@ -49,6 +49,35 @@ module Arrow
         @column = column
       end
 
+      def evaluate
+        data = @column.data
+        if data.n_chunks == 1
+          array = data.get_chunk(0)
+          if array.is_a?(BooleanArray)
+            array
+          else
+            array.cast(BooleanDataType.new)
+          end
+        else
+          raw_array = []
+          data.each_chunk do |chunk|
+            if chunk.is_a?(BooleanArray)
+              boolean_array = chunk
+            else
+              boolean_array = chunk.cast(BooleanDataType.new)
+            end
+            boolean_array.each do |value|
+              raw_array << value
+            end
+          end
+          BooleanArray.new(raw_array)
+        end
+      end
+
+      def !@
+        NotColumnCondition.new(@column)
+      end
+
       def ==(value)
         EqualCondition.new(@column, value)
       end
@@ -71,6 +100,36 @@ module Arrow
 
       def >=(value)
         GreaterEqualCondition.new(@column, value)
+      end
+    end
+
+    class NotColumnCondition < Condition
+      def initialize(column)
+        @column = column
+      end
+
+      def evaluate
+        data = @column.data
+        raw_array = []
+        data.each_chunk do |chunk|
+          if chunk.is_a?(BooleanArray)
+            boolean_array = chunk
+          else
+            boolean_array = chunk.cast(BooleanDataType.new)
+          end
+          boolean_array.each do |value|
+            if value.nil?
+              raw_array << value
+            else
+              raw_array << !value
+            end
+          end
+        end
+        BooleanArray.new(raw_array)
+      end
+
+      def !@
+        ColumnCondition.new(@column)
       end
     end
 
