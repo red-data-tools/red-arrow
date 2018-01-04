@@ -200,4 +200,80 @@ class TableTest < Test::Unit::TestCase
   test("column name getter") do
     assert_equal(@visible_column, @table.visible)
   end
+
+  sub_test_case("#remove_column") do
+    test("String") do
+      assert_equal(<<-TABLE, @table.remove_column("visible").to_s)
+	count
+0	    1
+1	    2
+2	    4
+3	    8
+4	   16
+5	   32
+6	   64
+7	  128
+      TABLE
+    end
+
+    test("Symbol") do
+      assert_equal(<<-TABLE, @table.remove_column(:visible).to_s)
+	count
+0	    1
+1	    2
+2	    4
+3	    8
+4	   16
+5	   32
+6	   64
+7	  128
+      TABLE
+    end
+
+    test("unknown column name") do
+      assert_raise(KeyError) do
+        @table.remove_column(:nonexistent)
+      end
+    end
+
+    test("Integer") do
+      assert_equal(<<-TABLE, @table.remove_column(1).to_s)
+	count
+0	    1
+1	    2
+2	    4
+3	    8
+4	   16
+5	   32
+6	   64
+7	  128
+      TABLE
+    end
+
+    test("negative integer") do
+      assert_equal(<<-TABLE, @table.remove_column(-1).to_s)
+	count
+0	    1
+1	    2
+2	    4
+3	    8
+4	   16
+5	   32
+6	   64
+7	  128
+      TABLE
+    end
+
+    test("too small index") do
+      assert_raise(IndexError) do
+        @table.remove_column(-3)
+      end
+    end
+
+    test("too large index") do
+      assert_raise(IndexError) do
+        @table.remove_column(2)
+      end
+    end
+  end
 end

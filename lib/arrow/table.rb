@@ -186,6 +186,28 @@ module Arrow
       self.class.new(Schema.new(new_fields), new_columns)
     end
 
+    alias_method :remove_column_raw, :remove_column
+    def remove_column(name_or_index)
+      case name_or_index
+      when String, Symbol
+        name = name_or_index.to_s
+        index = columns.index {|column| column.name == name}
+        if index.nil?
+          message = "unknown column: #{name_or_index.inspect}: #{self.inspect}"
+          raise KeyError.new(message)
+        end
+      else
+        index = name_or_index
+        index += n_columns if index < 0
+        if index < 0 or index >= n_columns
+          message = "out of index (0..#{n_columns - 1}): " +
+            "#{name_or_index.inspect}: #{self.inspect}"
+          raise IndexError.new(message)
+        end
+      end
+      remove_column_raw(index)
+    end
+
     def to_s(options={})
       formatter = TableFormatter.new(self, options)
       formatter.format
