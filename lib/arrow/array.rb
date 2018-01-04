@@ -37,6 +37,8 @@ module Arrow
     end
 
     def each
+      return to_enum(__method__) unless block_given?
+
       length.times do |i|
         yield(self[i])
       end

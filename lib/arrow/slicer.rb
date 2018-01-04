@@ -42,6 +42,65 @@ module Arrow
         message = "Slicer::Condition must define \#evaluate: #{inspect}"
         raise NotImplementedError.new(message)
       end
+
+      def &(condition)
+        AndCondition.new(self, condition)
+      end
+
+      def |(condition)
+        OrCondition.new(self, condition)
+      end
+
+      def ^(condition)
+        XorCondition.new(self, condition)
+      end
+    end
+
+    class LogicalCondition < Condition
+      def initialize(condition1, condition2)
+        @condition1 = condition1
+        @condition2 = condition2
+      end
+
+      def evaluate
+        values1 = @condition1.evaluate.each
+        values2 = @condition2.evaluate.each
+        raw_array = []
+        begin
+          loop do
+            value1 = values1.next
+            value2 = values2.next
+            if value1.nil? or value2.nil?
+              raw_array << nil
+            else
+              raw_array << evaluate_value(value1, value2)
+            end
+          end
+        rescue StopIteration
+        end
+        BooleanArray.new(raw_array)
+      end
+    end
+
+    class AndCondition < LogicalCondition
+      private
+      def evaluate_value(value1, value2)
+        value1 and value2
+      end
+    end
+
+    class OrCondition < LogicalCondition
+      private
+      def evaluate_value(value1, value2)
+        value1 or value2
+      end
+    end
+
+    class XorCondition < LogicalCondition
+      private
+      def evaluate_value(value1, value2)
+        value1 ^ value2
+      end
     end
 
     class ColumnCondition < Condition

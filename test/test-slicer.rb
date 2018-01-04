@@ -284,4 +284,41 @@ class SlicerTest < Test::Unit::TestCase
 4	    8	true   
     TABLE
   end
+
+  test("condition & condition") do
+    sliced_table = @table.slice do |slicer|
+      slicer.visible & (slicer.count >= 16)
+    end
+    assert_equal(<<-TABLE, sliced_table.to_s)
+	count	visible
+0	   16	true   
+1	  256	true   
+    TABLE
+  end
+
+  test("condition | condition") do
+    sliced_table = @table.slice do |slicer|
+      slicer.visible | (slicer.count >= 16)
+    end
+    assert_equal(<<-TABLE, sliced_table.to_s)
+	count	visible
+0	    1	true   
+1	    8	true   
+2	   16	true   
+3	   32	false  
+4	  256	true   
+    TABLE
+  end
+
+  test("condition ^ condition") do
+    sliced_table = @table.slice do |slicer|
+      slicer.visible ^ (slicer.count >= 16)
+    end
+    assert_equal(<<-TABLE, sliced_table.to_s)
+	count	visible
+0	    1	true   
+1	    8	true   
+2	   32	false  
+    TABLE
+  end
 end
