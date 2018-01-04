@@ -93,9 +93,9 @@ class SlicerTest < Test::Unit::TestCase
     end
   end
 
-  test("column.nil?") do
+  test("column.null?") do
     sliced_table = @table.slice do |slicer|
-      slicer.visible.nil?
+      slicer.visible.null?
     end
     assert_equal(<<-TABLE, sliced_table.to_s)
 	count	visible

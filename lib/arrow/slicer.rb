@@ -137,7 +137,7 @@ module Arrow
         NotColumnCondition.new(@column)
       end
 
-      def nil?
+      def null?
         self == nil
       end
 
