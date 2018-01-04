@@ -93,6 +93,19 @@ class SlicerTest < Test::Unit::TestCase
     end
   end
 
+  test("column.nil?") do
+    sliced_table = @table.slice do |slicer|
+      slicer.visible.nil?
+    end
+    assert_equal(<<-TABLE, sliced_table.to_s)
+	count	visible
+0	    0	       
+1	    4	       
+2	   64	       
+3	     	       
+    TABLE
+  end
+
   sub_test_case("column ==") do
     test("nil") do
       sliced_table = @table.slice do |slicer|
