@@ -337,4 +337,26 @@ class TableTest < Test::Unit::TestCase
       TABLE
     end
   end
+
+  sub_test_case("#save and .load") do
+    sub_test_case(":format") do
+      test("default") do
+        file = Tempfile.new(["red-arrow", ".arrow"])
+        @table.save(file.path)
+        assert_equal(@table, Arrow::Table.load(file.path))
+      end
+
+      test(":batch") do
+        file = Tempfile.new(["red-arrow", ".arrow"])
+        @table.save(file.path, :format => :batch)
+        assert_equal(@table, Arrow::Table.load(file.path, :format => :batch))
+      end
+
+      test(":stream") do
+        file = Tempfile.new(["red-arrow", ".arrow"])
+        @table.save(file.path, :format => :stream)
+        assert_equal(@table, Arrow::Table.load(file.path, :format => :stream))
+      end
+    end
+  end
 end

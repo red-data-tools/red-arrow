@@ -14,6 +14,56 @@
 
 module Arrow
   class Table
+    class << self
+      def load(path, options={})
+        path = path.to_path if path.respond_to?(:to_path)
+        format = options[:format] || :batch
+        custom_load_method = "load_as_#{format}"
+        unless respond_to?(custom_load_method, true)
+          available_formats = []
+          (methods(true) | private_methods(true)).each do |name|
+            match_data = /\Aload_as_/.match(name.to_s)
+            if match_data
+              available_formats << match_data.post_match
+            end
+          end
+          message = "Arrow::Table load format must be one of ["
+          message << available_formats.join(", ")
+          message << "]: #{format.inspect}"
+          raise ArgumentError, message
+        end
+        __send__(custom_load_method, path, options)
+      end
+
+      private
+      def load_raw(reader_class, path, options)
+        input = MemoryMappedInputStream.new(path)
+        reader = reader_class.new(input)
+        schema = reader.schema
+        chunked_arrays = []
+        reader.each do |record_batch|
+          record_batch.columns.each_with_index do |array, i|
+            chunked_array = (chunked_arrays[i] ||= [])
+            chunked_array << array
+          end
+        end
+        columns = schema.fields.collect.with_index do |field, i|
+          Column.new(field, ChunkedArray.new(chunked_arrays[i]))
+        end
+        table = new(schema, columns)
+        table.instance_variable_set(:@input, input)
+        table
+      end
+
+      def load_as_batch(path, options)
+        load_raw(RecordBatchFileReader, path, options)
+      end
+
+      def load_as_stream(path, options)
+        load_raw(RecordBatchStreamReader, path, options)
+      end
+    end
+
     alias_method :initialize_raw, :initialize
     def initialize(schema_or_raw_table_or_columns, columns=nil)
       if columns.nil?
@@ -246,6 +296,26 @@ module Arrow
       self.class.new(selected_columns)
     end
 
+    def save(path, options={})
+      path = path.to_path if path.respond_to?(:to_path)
+      format = options[:format] || :batch
+      custom_save_method = "save_as_#{format}"
+      unless respond_to?(custom_save_method, true)
+        available_formats = []
+        (methods(true) | private_methods(true)).each do |name|
+          match_data = /\Aseve_as_/.match(name.to_s)
+          if match_data
+            available_formats << match_data.post_match
+          end
+        end
+        message = "Arrow::Table save format must be one of ["
+        message << available_formats.join(", ")
+        message << "]: #{format.inspect}"
+        raise ArgumentError, message
+      end
+      __send__(custom_save_method, path, options)
+    end
+
     def to_s(options={})
       formatter = TableFormatter.new(self, options)
       formatter.format
@@ -330,6 +400,22 @@ module Arrow
           "<#{name}>: <#{data.inspect}>: #{inspect}"
         raise ArgumentError, message
       end
+    end
+
+    def save_raw(writer_class, path, options)
+      FileOutputStream.open(path, false) do |output|
+        writer_class.open(output, schema) do |writer|
+          writer.write_table(self)
+        end
+      end
+    end
+
+    def save_as_batch(path, options)
+      save_raw(RecordBatchFileWriter, path, options)
+    end
+
+    def save_as_stream(path, options)
+      save_raw(RecordBatchStreamWriter, path, options)
     end
   end
 end
