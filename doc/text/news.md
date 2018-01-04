@@ -1,5 +1,41 @@
 # News
 
+## 0.8.0 - 2018-01-04
+
+### Improvements
+
+  * Required Apache Arrow 0.8.0.
+
+  * Update README. [GitHub#5][Patch by mikisou]
+
+  * `Arrow::Table#each_record_batch`: Added.
+
+  * `Arrow::ArrayBuilder#build`: Added.
+
+  * `Arrow::CSVReader`: Added.
+
+  * `Arrow::Array#[]`: Added `NULL` support.
+
+  * `Arrow::TimestampArray`: Added.
+
+  * `Arrow::Table#to_s`: Added table style format.
+
+  * `Arrow::Table#slice`: Added.
+
+  * `Arrow::Table#[]`: Added.
+
+  * `Arrow::Table`: Added dynamic column name reader.
+
+  * `Arrow::Table#merge`: Added.
+
+  * `Arrow::Table#remove_column`: Added column name support.
+
+  * `Arrow::Table#select_columns`: Added.
+
+### Thanks
+
+  * mikisou
+
 ## 0.4.1 - 2017-09-19
 
 ### Improvements
