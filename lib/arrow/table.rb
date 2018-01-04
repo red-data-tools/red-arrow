@@ -186,8 +186,8 @@ module Arrow
       self.class.new(Schema.new(new_fields), new_columns)
     end
 
-    def to_s
-      formatter = TableFormatter.new(self)
+    def to_s(options={})
+      formatter = TableFormatter.new(self, options)
       formatter.format
     end
 

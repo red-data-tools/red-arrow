@@ -16,8 +16,9 @@ require "time"
 
 module Arrow
   class TableFormatter
-    def initialize(table)
+    def initialize(table, options={})
       @table = table
+      @options = options
     end
 
     def format
@@ -32,7 +33,7 @@ module Arrow
       n_rows = @table.n_rows
       return text if n_rows.zero?
 
-      border = 20
+      border = @options[:border] || 10
       n_digits = (Math.log10(n_rows) + 1).truncate
       [border, n_rows].min.times do |i|
         format_row(text, columns, i, n_digits)
