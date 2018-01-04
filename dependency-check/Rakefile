@@ -30,7 +30,7 @@ end
 namespace :dependency do
   desc "Check dependency"
   task :check do
-    unless PKGConfig.check_version?("arrow-glib", ">= 0.8.0")
+    unless PKGConfig.check_version?("arrow-glib", 0, 8, 0)
       unless NativePackageInstaller.install(:debian => "libarrow-glib-dev",
                                             :redhat => "arrow-glib-devel")
         exit(false)
