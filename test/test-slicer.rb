@@ -334,4 +334,68 @@ class SlicerTest < Test::Unit::TestCase
 2	   32	false  
     TABLE
   end
+
+  test("select") do
+    sliced_table = @table.slice do |slicer|
+      slicer.visible.select do |value|
+        value.nil? or value
+      end
+    end
+    assert_equal(<<-TABLE, sliced_table.to_s)
+	count	visible
+0	    0	       
+1	    1	true   
+2	    4	       
+3	    8	true   
+4	   16	true   
+5	   64	       
+6	     	       
+7	  256	true   
+    TABLE
+  end
+
+  test("!select") do
+    sliced_table = @table.slice do |slicer|
+      !slicer.visible.select do |value|
+        value.nil? or value
+      end
+    end
+    assert_equal(<<-TABLE, sliced_table.to_s)
+	count	visible
+0	    2	false  
+1	   32	false  
+    TABLE
+  end
+
+  test("reject") do
+    sliced_table = @table.slice do |slicer|
+      slicer.visible.reject do |value|
+        value.nil? or value
+      end
+    end
+    assert_equal(<<-TABLE, sliced_table.to_s)
+	count	visible
+0	    2	false  
+1	   32	false  
+    TABLE
+  end
+
+  test("!reject") do
+    sliced_table = @table.slice do |slicer|
+      !slicer.visible.reject do |value|
+        value.nil? or value
+      end
+    end
+    assert_equal(<<-TABLE, sliced_table.to_s)
+	count	visible
+0	    0	       
+1	    1	true   
+2	    4	       
+3	    8	true   
+4	   16	true   
+5	   64	       
+6	     	       
+7	  256	true   
+    TABLE
+  end
 end

@@ -164,6 +164,14 @@ module Arrow
       def >=(value)
         GreaterEqualCondition.new(@column, value)
       end
+
+      def select(&block)
+        SelectCondition.new(@column, block)
+      end
+
+      def reject(&block)
+        RejectCondition.new(@column, block)
+      end
     end
 
     class NotColumnCondition < Condition
@@ -336,6 +344,44 @@ module Arrow
             nil
           else
             @value <= value
+          end
+        end
+        BooleanArray.new(raw_array)
+      end
+    end
+
+    class SelectCondition < Condition
+      def initialize(column, block)
+        @column = column
+        @block = block
+      end
+
+      def !@
+        RejectCondition.new(@column, @block)
+      end
+
+      def evaluate
+        BooleanArray.new(@column.collect(&@block))
+      end
+    end
+
+    class RejectCondition < Condition
+      def initialize(column, block)
+        @column = column
+        @block = block
+      end
+
+      def !@
+        SelectCondition.new(@column, @block)
+      end
+
+      def evaluate
+        raw_array = @column.collect do |value|
+          evaluated_value = @block.call(value)
+          if evaluated_value.nil?
+            nil
+          else
+            not evaluated_value
           end
         end
         BooleanArray.new(raw_array)
