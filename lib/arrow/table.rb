@@ -83,8 +83,20 @@ module Arrow
     #
     # @return [Arrow::Table]
     def slice(*slicers)
+      if block_given?
+        block_slicer = yield(Slicer.new(self))
+        case block_slicer
+        when nil
+          # Ignore
+        when ::Array
+          slicers.concat(block_slicer)
+        else
+          slicers << block_slicer
+        end
+      end
       ranges = []
       slicers.each do |slicer|
+        slicer = slicer.evaluate if slicer.respond_to?(:evaluate)
         case slicer
         when Integer
           ranges << [slicer, slicer]
@@ -119,7 +131,7 @@ module Arrow
           end
         else
           message = "slicer must be Integer, Range, [from, to] or " +
-            "Arrow::BooleanArray: #{slicer.inspect}"
+            "Arrow::BooleanArray, Arrow::Slicer::Condition: #{slicer.inspect}"
           raise ArgumentError, message
         end
       end

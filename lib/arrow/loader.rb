@@ -28,8 +28,6 @@ module Arrow
     end
 
     def require_libraries
-      require "arrow/searchable"
-
       require "arrow/array"
       require "arrow/array-builder"
       require "arrow/buffer"
@@ -38,6 +36,7 @@ module Arrow
       require "arrow/csv-reader"
       require "arrow/field"
       require "arrow/record-batch"
+      require "arrow/slicer"
       require "arrow/table"
       require "arrow/table-formatter"
       require "arrow/tensor"

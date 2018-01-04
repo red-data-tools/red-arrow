@@ -15,7 +15,6 @@
 module Arrow
   class Column
     include Enumerable
-    prepend Searchable
 
     def [](i)
       data[i]
