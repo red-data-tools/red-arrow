@@ -17,7 +17,11 @@ module Arrow
     class << self
       def load(path, options={})
         path = path.to_path if path.respond_to?(:to_path)
-        format = options[:format] || :batch
+        format = options[:format]
+        if format.nil?
+          return load_raw(nil, path, options)
+        end
+
         custom_load_method = "load_as_#{format}"
         unless respond_to?(custom_load_method, true)
           available_formats = []
@@ -37,8 +41,29 @@ module Arrow
 
       private
       def load_raw(reader_class, path, options)
-        input = MemoryMappedInputStream.new(path)
-        reader = reader_class.new(input)
+        input = nil
+        reader = nil
+        if reader_class.nil?
+          reader_class_candidates = [
+            RecordBatchFileReader,
+            RecordBatchStreamReader,
+          ]
+          error = nil
+          reader_class_candidates.each do |reader_class_candidate|
+            input = MemoryMappedInputStream.new(path)
+            begin
+              reader = reader_class_candidate.new(input)
+            rescue Arrow::Error
+              error = $!
+            else
+              break
+            end
+          end
+          raise error if reader.nil?
+        else
+          input = MemoryMappedInputStream.new(path)
+          reader = reader_class.new(input)
+        end
         schema = reader.schema
         chunked_arrays = []
         reader.each do |record_batch|

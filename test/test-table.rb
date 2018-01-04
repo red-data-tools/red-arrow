@@ -357,6 +357,20 @@ class TableTest < Test::Unit::TestCase
         @table.save(file.path, :format => :stream)
         assert_equal(@table, Arrow::Table.load(file.path, :format => :stream))
       end
+
+      sub_test_case("load: auto detect") do
+        test(":batch") do
+          file = Tempfile.new(["red-arrow", ".arrow"])
+          @table.save(file.path, :format => :batch)
+          assert_equal(@table, Arrow::Table.load(file.path))
+        end
+
+        test(":stream") do
+          file = Tempfile.new(["red-arrow", ".arrow"])
+          @table.save(file.path, :format => :stream)
+          assert_equal(@table, Arrow::Table.load(file.path))
+        end
+      end
     end
   end
 end
