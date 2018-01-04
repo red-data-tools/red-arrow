@@ -1,4 +1,4 @@
-# Copyright 2017 Kouhei Sutou <kou@clear-code.com>
+# Copyright 2017-2018 Kouhei Sutou <kou@clear-code.com>
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -15,19 +15,25 @@
 module Arrow
   class Table
     alias_method :initialize_raw, :initialize
-    def initialize(schema_or_raw_table, columns=nil)
+    def initialize(schema_or_raw_table_or_columns, columns=nil)
       if columns.nil?
-        raw_table = schema_or_raw_table
-        fields = []
-        columns = []
-        raw_table.each do |name, array|
-          field = Field.new(name.to_s, array.value_data_type)
-          fields << field
-          columns << Column.new(field, array)
+        if schema_or_raw_table_or_columns[0].is_a?(Column)
+          columns = schema_or_raw_table_or_columns
+          fields = columns.collect(&:field)
+          schema = Schema.new(fields)
+        else
+          raw_table = schema_or_raw_table_or_columns
+          fields = []
+          columns = []
+          raw_table.each do |name, array|
+            field = Field.new(name.to_s, array.value_data_type)
+            fields << field
+            columns << Column.new(field, array)
+          end
+          schema = Schema.new(fields)
         end
-        schema = Schema.new(fields)
       else
-        schema = schema_or_raw_table
+        schema = schema_or_raw_table_or_columns
       end
       initialize_raw(schema, columns)
     end
@@ -193,7 +199,7 @@ module Arrow
         name = name_or_index.to_s
         index = columns.index {|column| column.name == name}
         if index.nil?
-          message = "unknown column: #{name_or_index.inspect}: #{self.inspect}"
+          message = "unknown column: #{name_or_index.inspect}: #{inspect}"
           raise KeyError.new(message)
         end
       else
@@ -201,11 +207,43 @@ module Arrow
         index += n_columns if index < 0
         if index < 0 or index >= n_columns
           message = "out of index (0..#{n_columns - 1}): " +
-            "#{name_or_index.inspect}: #{self.inspect}"
+            "#{name_or_index.inspect}: #{inspect}"
           raise IndexError.new(message)
         end
       end
       remove_column_raw(index)
+    end
+
+    def select_columns(*selectors, &block)
+      if selectors.empty?
+        return to_enum(__method__) unless block_given?
+        selected_columns = columns.select(&block)
+      else
+        selected_columns = []
+        selectors.each do |selector|
+          case selector
+          when String, Symbol
+            column = find_column(selector)
+            if column.nil?
+              message = "unknown column: #{selector.inspect}: #{inspect}"
+              raise KeyError.new(message)
+            end
+            selected_columns << column
+          when Range
+            selected_columns.concat(columns[selector])
+          else
+            column = columns[selector]
+            if column.nil?
+              message = "out of index (0..#{n_columns - 1}): " +
+              "#{selector.inspect}: #{inspect}"
+              raise IndexError.new(message)
+            end
+            selected_columns << column
+          end
+        end
+        selected_columns = selected_columns.select(&block) if block_given?
+      end
+      self.class.new(selected_columns)
     end
 
     def to_s(options={})

@@ -276,4 +276,65 @@ class TableTest < Test::Unit::TestCase
       end
     end
   end
+
+  sub_test_case("#select_columns") do
+    def setup
+      raw_table = {
+        :a => Arrow::UInt32Array.new([1]),
+        :b => Arrow::UInt32Array.new([1]),
+        :c => Arrow::UInt32Array.new([1]),
+        :d => Arrow::UInt32Array.new([1]),
+        :e => Arrow::UInt32Array.new([1]),
+      }
+      @table = Arrow::Table.new(raw_table)
+    end
+
+    test("names") do
+      assert_equal(<<-TABLE, @table.select_columns(:c, :a).to_s)
+	c	a
+0	1	1
+      TABLE
+    end
+
+    test("range") do
+      assert_equal(<<-TABLE, @table.select_columns(2...4).to_s)
+	c	d
+0	1	1
+      TABLE
+    end
+
+    test("indexes") do
+      assert_equal(<<-TABLE, @table.select_columns(0, -1, 2).to_s)
+	a	e	c
+0	1	1	1
+      TABLE
+    end
+
+    test("mixed") do
+      assert_equal(<<-TABLE, @table.select_columns(:a, -1, 2..3).to_s)
+	a	e	c	d
+0	1	1	1	1
+      TABLE
+    end
+
+    test("block") do
+      selected_table = @table.select_columns.with_index do |column, i|
+        column.name == "a" or i.odd?
+      end
+      assert_equal(<<-TABLE, selected_table.to_s)
+	a	b	d
+0	1	1	1
+      TABLE
+    end
+
+    test("names, indexes and block") do
+      selected_table = @table.select_columns(:a, -1) do |column|
+        column.name == "a"
+      end
+      assert_equal(<<-TABLE, selected_table.to_s)
+	a
+0	1
+      TABLE
+    end
+  end
 end
