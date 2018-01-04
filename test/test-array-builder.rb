@@ -14,58 +14,91 @@
 
 class ArrayBuilderTest < Test::Unit::TestCase
   sub_test_case(".build") do
-    test("empty") do
-      array = Arrow::Int32ArrayBuilder.build([])
-      assert_equal([],
-                   array.to_a)
+    def assert_build(builder_class, raw_array)
+      array = builder_class.build(raw_array)
+      assert_equal(raw_array, array.to_a)
     end
 
-    test("values") do
-      array = Arrow::Int32ArrayBuilder.build([1, -2])
-      assert_equal([1, -2],
-                   array.to_a)
+    sub_test_case("generic builder") do
+      test("strings") do
+        assert_build(Arrow::ArrayBuilder,
+                     ["Hello", nil, "World"])
+      end
+
+      test("positive integers") do
+        assert_build(Arrow::ArrayBuilder,
+                     [1, nil, 2, nil, 3])
+      end
+
+      test("negative integers") do
+        assert_build(Arrow::ArrayBuilder,
+                     [nil, -1, nil, -2, nil, -3])
+      end
+
+      test("times") do
+        assert_build(Arrow::ArrayBuilder,
+                     [Time.at(0), Time.at(1), Time.at(2)])
+      end
+
+      test("dates") do
+        assert_build(Arrow::ArrayBuilder,
+                     [Date.new(2018, 1, 4), Date.new(2018, 1, 5)])
+      end
+
+      test("datetimes") do
+        assert_build(Arrow::ArrayBuilder,
+                     [
+                       DateTime.new(2018, 1, 4, 23, 18, 23),
+                       DateTime.new(2018, 1, 5, 0, 23, 21),
+                     ])
+      end
     end
 
-    test("values, nils") do
-      array = Arrow::Int32ArrayBuilder.build([1, -2, nil, nil])
-      assert_equal([1, -2, nil, nil],
-                   array.to_a)
-    end
+    sub_test_case("specific builder") do
+      test("empty") do
+        assert_build(Arrow::Int32ArrayBuilder,
+                     [])
+      end
 
-    test("values, nils, values") do
-      array = Arrow::Int32ArrayBuilder.build([1, -2, nil, nil, 3, -4])
-      assert_equal([1, -2, nil, nil, 3, -4],
-                   array.to_a)
-    end
+      test("values") do
+        assert_build(Arrow::Int32ArrayBuilder,
+                     [1, -2])
+      end
 
-    test("values, nils, values, nils") do
-      array = Arrow::Int32ArrayBuilder.build([1, -2, nil, nil, 3, -4, nil, nil])
-      assert_equal([1, -2, nil, nil, 3, -4, nil, nil],
-                   array.to_a)
-    end
+      test("values, nils") do
+        assert_build(Arrow::Int32ArrayBuilder,
+                     [1, -2, nil, nil])
+      end
 
-    test("nils") do
-      array = Arrow::Int32ArrayBuilder.build([nil, nil])
-      assert_equal([nil, nil],
-                   array.to_a)
-    end
+      test("values, nils, values") do
+        assert_build(Arrow::Int32ArrayBuilder,
+                     [1, -2, nil, nil, 3, -4])
+      end
 
-    test("nils, values") do
-      array = Arrow::Int32ArrayBuilder.build([nil, nil, 3, -4])
-      assert_equal([nil, nil, 3, -4],
-                   array.to_a)
-    end
+      test("values, nils, values, nils") do
+        assert_build(Arrow::Int32ArrayBuilder,
+                     [1, -2, nil, nil, 3, -4, nil, nil])
+      end
 
-    test("nils, values, nil") do
-      array = Arrow::Int32ArrayBuilder.build([nil, nil, 3, -4, nil, nil])
-      assert_equal([nil, nil, 3, -4, nil, nil],
-                   array.to_a)
-    end
+      test("nils") do
+        assert_build(Arrow::Int32ArrayBuilder,
+                     [nil, nil])
+      end
 
-    test("nils, values, nil, values") do
-      array = Arrow::Int32ArrayBuilder.build([nil, nil, 3, -4, nil, nil, 5, -6])
-      assert_equal([nil, nil, 3, -4, nil, nil, 5, -6],
-                   array.to_a)
+      test("nils, values") do
+        assert_build(Arrow::Int32ArrayBuilder,
+                     [nil, nil, 3, -4])
+      end
+
+      test("nils, values, nil") do
+        assert_build(Arrow::Int32ArrayBuilder,
+                     [nil, nil, 3, -4, nil, nil])
+      end
+
+      test("nils, values, nil, values") do
+        assert_build(Arrow::Int32ArrayBuilder,
+                     [nil, nil, 3, -4, nil, nil, 5, -6])
+      end
     end
   end
 end

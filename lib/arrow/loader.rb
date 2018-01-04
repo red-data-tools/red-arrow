@@ -34,6 +34,10 @@ module Arrow
       require "arrow/chunked-array"
       require "arrow/column"
       require "arrow/csv-reader"
+      require "arrow/date32-array"
+      require "arrow/date32-array-builder"
+      require "arrow/date64-array"
+      require "arrow/date64-array-builder"
       require "arrow/field"
       require "arrow/record-batch"
       require "arrow/slicer"
@@ -41,6 +45,7 @@ module Arrow
       require "arrow/table-formatter"
       require "arrow/tensor"
       require "arrow/timestamp-array"
+      require "arrow/timestamp-array-builder"
 
       require "arrow/record-batch-file-reader"
       require "arrow/record-batch-stream-reader"
@@ -67,7 +72,7 @@ module Arrow
           method_name = "get_value"
         end
         super(info, klass, method_name)
-      when "Arrow::TimestampArray"
+      when "Arrow::TimestampArray", "Arrow::Date32Array", "Arrow::Date64Array"
         case method_name
         when "get_value"
           method_name = "get_raw_value"
