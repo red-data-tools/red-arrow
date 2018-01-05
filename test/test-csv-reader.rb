@@ -15,76 +15,15 @@
 class CSVReaderTest < Test::Unit::TestCase
   include Helper::Fixture
 
-  sub_test_case(".read") do
-    test("String: data: with header") do
-      data = fixture_path("with-header.csv").read
-      assert_equal(<<-TABLE, Arrow::CSVReader.read(data).to_s)
-	name	score
-0	alice	   10
-1	bob 	   29
-2	chris	   -1
-      TABLE
-    end
-
-    test("String: data: without header") do
-      data = fixture_path("without-header.csv").read
-      assert_equal(<<-TABLE, Arrow::CSVReader.read(data).to_s)
-	0	1
-0	alice	10
-1	bob	29
-2	chris	-1
-      TABLE
-    end
-
-    test("String: path: with header") do
-      path = fixture_path("with-header.csv").to_s
-      assert_equal(<<-TABLE, Arrow::CSVReader.read(path).to_s)
-	name	score
-0	alice	   10
-1	bob 	   29
-2	chris	   -1
-      TABLE
-    end
-
-    test("String: path: without header") do
-      path = fixture_path("without-header.csv").to_s
-      assert_equal(<<-TABLE, Arrow::CSVReader.read(path).to_s)
-	0	1
-0	alice	10
-1	bob	29
-2	chris	-1
-      TABLE
-    end
-
-    test("Pathname: with header") do
-      path = fixture_path("with-header.csv")
-      assert_equal(<<-TABLE, Arrow::CSVReader.read(path).to_s)
-	name	score
-0	alice	   10
-1	bob 	   29
-2	chris	   -1
-      TABLE
-    end
-
-    test("Pathname: without header") do
-      path = fixture_path("without-header.csv")
-      assert_equal(<<-TABLE, Arrow::CSVReader.read(path).to_s)
-	0	1
-0	alice	10
-1	bob	29
-2	chris	-1
-      TABLE
-    end
-
-    test("CSV") do
-      CSV.open(fixture_path("with-header.csv").to_s, headers: true) do |csv|
-        assert_equal(<<-TABLE, Arrow::CSVReader.read(csv).to_s)
+  test("#read") do
+    CSV.open(fixture_path("with-header.csv").to_s, headers: true) do |csv|
+      reader = Arrow::CSVReader.new(csv)
+      assert_equal(<<-TABLE, reader.read.to_s)
 	name	score
 0	alice	10   
 1	bob 	29   
 2	chris	-1   
-        TABLE
-      end
+      TABLE
     end
   end
 end

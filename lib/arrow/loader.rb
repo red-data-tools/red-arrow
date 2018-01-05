@@ -33,6 +33,7 @@ module Arrow
       require "arrow/buffer"
       require "arrow/chunked-array"
       require "arrow/column"
+      require "arrow/csv-loader"
       require "arrow/csv-reader"
       require "arrow/date32-array"
       require "arrow/date32-array-builder"
