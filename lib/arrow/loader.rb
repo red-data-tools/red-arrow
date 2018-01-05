@@ -44,6 +44,8 @@ module Arrow
       require "arrow/slicer"
       require "arrow/table"
       require "arrow/table-formatter"
+      require "arrow/table-loader"
+      require "arrow/table-saver"
       require "arrow/tensor"
       require "arrow/timestamp-array"
       require "arrow/timestamp-array-builder"
