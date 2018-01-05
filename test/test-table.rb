@@ -16,14 +16,14 @@ class TableTest < Test::Unit::TestCase
   include Helper::Fixture
 
   def setup
-    @count_field = Arrow::Field.new("count", :uint32)
+    @count_field = Arrow::Field.new("count", :uint8)
     @visible_field = Arrow::Field.new("visible", :boolean)
     schema = Arrow::Schema.new([@count_field, @visible_field])
     count_arrays = [
-      Arrow::UInt32Array.new([1, 2]),
-      Arrow::UInt32Array.new([4, 8, 16]),
-      Arrow::UInt32Array.new([32, 64]),
-      Arrow::UInt32Array.new([128]),
+      Arrow::UInt8Array.new([1, 2]),
+      Arrow::UInt8Array.new([4, 8, 16]),
+      Arrow::UInt8Array.new([32, 64]),
+      Arrow::UInt8Array.new([128]),
     ]
     visible_arrays = [
       Arrow::BooleanArray.new([true, false, nil]),
@@ -282,11 +282,11 @@ class TableTest < Test::Unit::TestCase
   sub_test_case("#select_columns") do
     def setup
       raw_table = {
-        :a => Arrow::UInt32Array.new([1]),
-        :b => Arrow::UInt32Array.new([1]),
-        :c => Arrow::UInt32Array.new([1]),
-        :d => Arrow::UInt32Array.new([1]),
-        :e => Arrow::UInt32Array.new([1]),
+        :a => Arrow::UInt8Array.new([1]),
+        :b => Arrow::UInt8Array.new([1]),
+        :c => Arrow::UInt8Array.new([1]),
+        :d => Arrow::UInt8Array.new([1]),
+        :e => Arrow::UInt8Array.new([1]),
       }
       @table = Arrow::Table.new(raw_table)
     end
@@ -363,8 +363,7 @@ class TableTest < Test::Unit::TestCase
       test(":csv") do
         file = Tempfile.new(["red-arrow", ".csv"])
         @table.save(file.path, :format => :csv)
-        assert_equal(@table.to_s,
-                     Arrow::Table.load(file.path, :format => :csv).to_s)
+        assert_equal(@table, Arrow::Table.load(file.path, :format => :csv))
       end
 
       sub_test_case("load: auto detect") do
