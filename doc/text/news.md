@@ -1,5 +1,19 @@
 # News
 
+## 0.8.1 - 2018-01-05
+
+### Improvements
+
+  * `Arrow::ArrayBuilder.build`: Added generic array build support.
+
+  * `Arrow::Table#save`: Added.
+
+  * `Arrow::Table.load`: Added.
+
+  * `Arrow::CSVLoader`: Added.
+
+  * `Arrow::CSVReader.read`: Removed.
+
 ## 0.8.0 - 2018-01-04
 
 ### Improvements
