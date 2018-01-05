@@ -75,6 +75,33 @@ module Arrow
       end
     end
 
+    def selective_converter(target_index)
+      lambda do |field, field_info|
+        if target_index.nil? or field_info.index == target_index
+          yield(field)
+        else
+          field
+        end
+      end
+    end
+
+    BOOLEAN_CONVERTER = lambda do |field|
+      begin
+        encoded_field = field.encode(CSV::ConverterEncoding)
+      rescue EncodingError
+        field
+      else
+        case encoded_field
+        when "true"
+          true
+        when "false"
+          false
+        else
+          field
+        end
+      end
+    end
+
     ISO8601_CONVERTER = lambda do |field|
       begin
         encoded_field = field.encode(CSV::ConverterEncoding)
@@ -92,32 +119,88 @@ module Arrow
     def update_csv_parse_options(options, create_csv, *args)
       return options unless options.empty?
 
-      new_options = options.merge(converters: [:all, ISO8601_CONVERTER])
+      converters = [:all, BOOLEAN_CONVERTER, ISO8601_CONVERTER]
+      new_options = options.merge(converters: converters)
       __send__(create_csv, *args, **new_options) do |csv|
-        row1 = csv.shift
-        if row1.nil?
-          new_options[:headers] = false
-          return new_options
-        end
-        if row1.any?(&:nil?)
-          new_options[:headers] = false
-          return new_options
-        end
-
-        row2 = csv.shift
-        return new_options if row2.nil?
-        if row2.any?(&:nil?)
-          new_options[:headers] = true
-          return new_options
-        end
-
-        if row1.collect(&:class) != row2.collect(&:class)
-          new_options[:headers] = true
-          return new_options
-        end
-
-        new_options
+        new_options[:headers] = have_header?(csv)
       end
+      __send__(create_csv, *args, **new_options) do |csv|
+        new_options[:converters] = detect_robust_converters(csv)
+      end
+      return new_options
+    end
+
+    def have_header?(csv)
+      row1 = csv.shift
+      return false if row1.nil?
+      return false if row1.any?(&:nil?)
+
+      row2 = csv.shift
+      return nil if row2.nil?
+      return true if row2.any?(&:nil?)
+
+      if row1.collect(&:class) != row2.collect(&:class)
+        return true
+      end
+
+      nil
+    end
+
+    def detect_robust_converters(csv)
+      column_types = []
+      csv.each do |row|
+        row.each_with_index do |(_name, value), i|
+          current_column_type = column_types[i]
+          next if current_column_type == :string
+
+          candidate_type = nil
+          case value
+          when nil
+            next
+          when "true", "false", true, false
+            candidate_type = :boolean
+          when Integer
+            candidate_type = :integer
+          when Float
+            candidate_type = :float
+            if current_column_type == :integer
+              column_types[i] = candidate_type
+            end
+          when Time
+            candidate_type = :time
+          when DateTime
+            candidate_type = :date_time
+          when Date
+            candidate_type = :date
+          else
+            candidate_type = :string
+          end
+
+          column_types[i] ||= candidate_type
+          if column_types[i] != candidate_type
+            column_types[i] = :string
+          end
+        end
+      end
+
+      converters = []
+      column_types.each_with_index do |type, i|
+        case type
+        when :boolean
+          converters << selective_converter(i, &BOOLEAN_CONVERTER)
+        when :integer
+          converters << selective_converter(i, &CSV::Converters[:integer])
+        when :float
+          converters << selective_converter(i, &CSV::Converters[:float])
+        when :time
+          converters << selective_converter(i, &ISO8601_CONVERTER)
+        when :date_time
+          converters << selective_converter(i, &CSV::Converters[:date_time])
+        when :date
+          converters << selective_converter(i, &CSV::Converters[:date])
+        end
+      end
+      converters
     end
   end
 end

@@ -25,6 +25,11 @@ class ArrayBuilderTest < Test::Unit::TestCase
                      ["Hello", nil, "World"])
       end
 
+      test("boolean") do
+        assert_build(Arrow::ArrayBuilder,
+                     [true, nil, false])
+      end
+
       test("positive integers") do
         assert_build(Arrow::ArrayBuilder,
                      [1, nil, 2, nil, 3])

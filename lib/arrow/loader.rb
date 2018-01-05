@@ -40,6 +40,7 @@ module Arrow
       require "arrow/date64-array"
       require "arrow/date64-array-builder"
       require "arrow/field"
+      require "arrow/record"
       require "arrow/record-batch"
       require "arrow/slicer"
       require "arrow/table"

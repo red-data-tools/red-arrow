@@ -12,8 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+require "arrow/record-containable"
+
 module Arrow
   class Table
+    include RecordContainable
+
     class << self
       def load(path, options={})
         TableLoader.load(path, options)
@@ -44,16 +48,8 @@ module Arrow
       initialize_raw(schema, columns)
     end
 
-    def each_column
-      return to_enum(__method__) unless block_given?
-
-      n_columns.times do |i|
-        yield(get_column(i))
-      end
-    end
-
     def columns
-      @columns ||= each_column.to_a
+      @columns ||= n_columns.times.collect {|i| get_column(i)}
     end
 
     def each_record_batch
@@ -70,19 +66,12 @@ module Arrow
     # @return [Arrow::Column, Array<Arrow::Column>, nil]
     def [](*args)
       if args.size == 1
-        case args[0]
-        when String, Symbol
-          find_column(args[0])
-        else
-          message = "#{self.class}\#[#{args[0].inspect}]: " +
-            "Must be String or Symbol"
-          raise ArgumentError, message
-        end
+        find_column(args[0])
       else
         new_columns = args.collect do |column_name|
           column = find_column(column_name)
           if column.nil?
-            message = "Unknown column: <#{column_name.inspect}>: #{inspect}"
+            message = "unknown column: <#{column_name.inspect}>: #{inspect}"
             raise ArgumentError, message
           end
           column
@@ -280,13 +269,6 @@ module Arrow
     end
 
     private
-    def find_column(name)
-      name = name.to_s
-      columns.find do |column|
-        column.name == name
-      end
-    end
-
     def slice_by_ranges(ranges)
       sliced_columns = columns.collect do |column|
         chunks = []

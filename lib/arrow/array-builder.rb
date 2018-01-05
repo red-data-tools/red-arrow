@@ -28,6 +28,9 @@ module Arrow
           case value
           when nil
             # Ignore
+            nil
+          when true, false
+            return BooleanArray.new(values)
           when String
             return StringArray.new(values)
           when Float

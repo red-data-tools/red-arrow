@@ -15,25 +15,40 @@
 module Arrow
   class Record
     attr_accessor :index
-    def initialize(record_batch, index)
-      @record_batch = record_batch
+    def initialize(record_container, index)
+      @record_container = record_container
       @index = index
     end
 
     def [](column_name_or_column_index)
-      @record_batch.find_column(column_name_or_column_index)[@index]
+      column = @record_container.find_column(column_name_or_column_index)
+      return nil if column.nil?
+      column[@index]
     end
 
     def columns
-      @record_batch.columns
+      @record_container.columns
     end
 
     def to_h
       attributes = {}
-      @record_batch.schema.fields.each_with_index do |field, i|
+      @record_container.schema.fields.each_with_index do |field, i|
         attributes[field.name] = self[i]
       end
       attributes
+    end
+
+    def respond_to_missing?(name, include_private)
+      return true if @record_container.find_column(name)
+      super
+    end
+
+    def method_missing(name, *args, &block)
+      if args.empty?
+        column = @record_container.find_column(name)
+        return column[@index] if column
+      end
+      super
     end
   end
 end

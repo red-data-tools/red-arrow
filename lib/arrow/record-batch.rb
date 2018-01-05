@@ -12,57 +12,31 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-require "arrow/record"
+require "arrow/record-containable"
 
 module Arrow
   class RecordBatch
+    include RecordContainable
     include Enumerable
 
-    def each(reuse_record: false)
-      unless block_given?
-        return to_enum(__method__, reuse_record: reuse_record)
-      end
-
-      if reuse_record
-        record = Record.new(self, nil)
-        n_rows.times do |i|
-          record.index = i
-          yield(record)
-        end
-      else
-        n_rows.times do |i|
-          yield(Record.new(self, i))
-        end
-      end
-    end
-
-    def find_column(name_or_index)
-      case name_or_index
-      when String, Symbol
-        name = name_or_index
-        index = resolve_name(name)
-      else
-        index = name_or_index
-      end
-      columns[index]
-    end
+    alias_method :each, :each_record
 
     alias_method :columns_raw, :columns
     def columns
       @columns ||= columns_raw
     end
 
-    private
-    def resolve_name(name)
-      (@name_to_index ||= build_name_to_index)[name.to_s]
+    def respond_to_missing?(name, include_private)
+      return true if find_column(name)
+      super
     end
 
-    def build_name_to_index
-      index = {}
-      schema.fields.each_with_index do |field, i|
-        index[field.name] = i
+    def method_missing(name, *args, &block)
+      if args.empty?
+        column = find_column(name)
+        return column if column
       end
-      index
+      super
     end
   end
 end

@@ -13,6 +13,8 @@
 # limitations under the License.
 
 class TableTest < Test::Unit::TestCase
+  include Helper::Fixture
+
   def setup
     @count_field = Arrow::Field.new("count", :uint32)
     @visible_field = Arrow::Field.new("visible", :boolean)
@@ -358,6 +360,13 @@ class TableTest < Test::Unit::TestCase
         assert_equal(@table, Arrow::Table.load(file.path, :format => :stream))
       end
 
+      test(":csv") do
+        file = Tempfile.new(["red-arrow", ".csv"])
+        @table.save(file.path, :format => :csv)
+        assert_equal(@table.to_s,
+                     Arrow::Table.load(file.path, :format => :csv).to_s)
+      end
+
       sub_test_case("load: auto detect") do
         test(":batch") do
           file = Tempfile.new(["red-arrow", ".arrow"])
@@ -369,6 +378,16 @@ class TableTest < Test::Unit::TestCase
           file = Tempfile.new(["red-arrow", ".arrow"])
           @table.save(file.path, :format => :stream)
           assert_equal(@table, Arrow::Table.load(file.path))
+        end
+
+        test(":csv") do
+          path = fixture_path("with-header.csv")
+          assert_equal(<<-TABLE, Arrow::Table.load(path).to_s)
+	name	score
+0	alice	   10
+1	bob 	   29
+2	chris	   -1
+          TABLE
         end
       end
     end

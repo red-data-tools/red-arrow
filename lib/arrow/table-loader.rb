@@ -107,5 +107,11 @@ module Arrow
       reader = RecordBatchStreamReader.new(input)
       load_raw(input, reader)
     end
+
+    def load_as_csv(path)
+      options = @options.dup
+      options.delete(:format)
+      CSVLoader.load(Pathname.new(path), options)
+    end
   end
 end
