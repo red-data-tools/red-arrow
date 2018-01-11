@@ -45,6 +45,8 @@ module Arrow
       require "arrow/slicer"
       require "arrow/table"
       require "arrow/table-formatter"
+      require "arrow/table-list-formatter"
+      require "arrow/table-table-formatter"
       require "arrow/table-loader"
       require "arrow/table-saver"
       require "arrow/tensor"

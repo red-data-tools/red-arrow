@@ -12,8 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-require "time"
-
 module Arrow
   class TableFormatter
     def initialize(table, options={})
@@ -24,11 +22,7 @@ module Arrow
     def format
       text = ""
       columns = @table.columns
-      columns.each do |column|
-        text << "\t"
-        text << format_column_name(column)
-      end
-      text << "\n"
+      format_header(text, columns)
 
       n_rows = @table.n_rows
       return text if n_rows.zero?
@@ -46,7 +40,8 @@ module Arrow
                   0)
       return text if n_rows <= border
 
-      text << "...\n"
+      format_ellips(text)
+
       tail_start = [border, n_rows - border].max
       tail_limit = n_rows - tail_start
       tail_column_values = columns.collect do |column|
@@ -59,45 +54,6 @@ module Arrow
                   tail_start)
 
       text
-    end
-
-    private
-    FLOAT_N_DIGITS = 10
-    def format_column_name(column)
-      case column.data_type
-      when TimestampDataType
-        "%*s" % [Time.now.iso8601.size, column.name]
-      when FloatDataType, DoubleDataType
-        "%*s" % [FLOAT_N_DIGITS, column.name]
-      else
-        column.name
-      end
-    end
-
-    def format_rows(text, columns, rows, n_digits, start_offset)
-      rows.each_with_index do |row, nth_row|
-        text << ("%*d" % [n_digits, start_offset + nth_row])
-        row.each_with_index do |column_value, nth_column|
-          text << "\t"
-          column = columns[nth_column]
-          text << format_column_value(column, column_value)
-        end
-        text << "\n"
-      end
-      text
-    end
-
-    def format_column_value(column, value)
-      case value
-      when Time
-        value.iso8601
-      when Float
-        "%*f" % [[column.name.size, FLOAT_N_DIGITS].max, value]
-      when Integer
-        "%*d" % [column.name.size, value]
-      else
-        "%-*s" % [column.name.size, value.to_s]
-      end
     end
   end
 end

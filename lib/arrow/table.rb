@@ -250,7 +250,13 @@ module Arrow
     end
 
     def to_s(options={})
-      formatter = TableFormatter.new(self, options)
+      case options[:format]
+      when :list
+        formatter_class = TableListFormatter
+      else
+        formatter_class = TableTableFormatter
+      end
+      formatter = formatter_class.new(self, options)
       formatter.format
     end
 
