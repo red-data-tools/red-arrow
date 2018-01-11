@@ -158,6 +158,10 @@ module Arrow
         GreaterEqualCondition.new(@column, value)
       end
 
+      def in?(values)
+        InCondition.new(@column, values)
+      end
+
       def select(&block)
         SelectCondition.new(@column, block)
       end
@@ -337,6 +341,58 @@ module Arrow
             nil
           else
             @value <= value
+          end
+        end
+        BooleanArray.new(raw_array)
+      end
+    end
+
+    class InCondition < Condition
+      def initialize(column, values)
+        @column = column
+        @values = values
+      end
+
+      def !@
+        NotInCondition.new(@column, @values)
+      end
+
+      def evaluate
+        values_index = {}
+        @values.each do |value|
+          values_index[value] = true
+        end
+        raw_array = @column.collect do |value|
+          if value.nil?
+            nil
+          else
+            values_index.key?(value)
+          end
+        end
+        BooleanArray.new(raw_array)
+      end
+    end
+
+    class NotInCondition < Condition
+      def initialize(column, values)
+        @column = column
+        @values = values
+      end
+
+      def !@
+        InCondition.new(@column, @values)
+      end
+
+      def evaluate
+        values_index = {}
+        @values.each do |value|
+          values_index[value] = true
+        end
+        raw_array = @column.collect do |value|
+          if value.nil?
+            nil
+          else
+            not values_index.key?(value)
           end
         end
         BooleanArray.new(raw_array)
