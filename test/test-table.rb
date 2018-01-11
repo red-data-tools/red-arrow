@@ -58,14 +58,21 @@ class TableTest < Test::Unit::TestCase
       TABLE
     end
 
-    test("Integer") do
+    test("Integer: positive") do
       assert_equal(<<-TABLE, @table.slice(2).to_s)
 	count	visible
 0	    4	       
       TABLE
     end
 
-    test("Range: include end") do
+    test("Integer: negative") do
+      assert_equal(<<-TABLE, @table.slice(-1).to_s)
+	count	visible
+0	  128	       
+      TABLE
+    end
+
+    test("Range: positive: include end") do
       assert_equal(<<-TABLE, @table.slice(2..4).to_s)
 	count	visible
 0	    4	       
@@ -74,7 +81,7 @@ class TableTest < Test::Unit::TestCase
       TABLE
     end
 
-    test("Range: exclude end") do
+    test("Range: positive: exclude end") do
       assert_equal(<<-TABLE, @table.slice(2...4).to_s)
 	count	visible
 0	    4	       
@@ -82,11 +89,36 @@ class TableTest < Test::Unit::TestCase
       TABLE
     end
 
-    test("[from, to]") do
+    test("Range: negative: include end") do
+      assert_equal(<<-TABLE, @table.slice(-4..-2).to_s)
+	count	visible
+0	   16	true   
+1	   32	false  
+2	   64	       
+      TABLE
+    end
+
+    test("Range: negative: exclude end") do
+      assert_equal(<<-TABLE, @table.slice(-4...-2).to_s)
+	count	visible
+0	   16	true   
+1	   32	false  
+      TABLE
+    end
+
+    test("[from, to]: positive") do
       assert_equal(<<-TABLE, @table.slice([0, 2]).to_s)
 	count	visible
 0	    1	true   
 1	    2	false  
+      TABLE
+    end
+
+    test("[from, to]: negative") do
+      assert_equal(<<-TABLE, @table.slice([-4, 2]).to_s)
+	count	visible
+0	   16	true   
+1	   32	false  
       TABLE
     end
 

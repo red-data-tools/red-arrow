@@ -103,14 +103,18 @@ module Arrow
         slicer = slicer.evaluate if slicer.respond_to?(:evaluate)
         case slicer
         when Integer
+          slicer += n_rows if slicer < 0
           ranges << [slicer, slicer]
         when Range
           from = slicer.first
           to = slicer.last
           to -= 1 if slicer.exclude_end?
+          from += n_rows if from < 0
+          to += n_rows if to < 0
           ranges << [from, to]
         when ::Array
           from = slicer[0]
+          from += n_rows if from < 0
           to = from + slicer[1] - 1
           ranges << [from, to]
         when ChunkedArray
