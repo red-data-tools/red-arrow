@@ -40,13 +40,16 @@ module Arrow
                   0)
       return text if n_rows <= border
 
-      format_ellipsis(text)
-
       tail_start = [border, n_rows - border].max
       tail_limit = n_rows - tail_start
       tail_column_values = columns.collect do |column|
         column.reverse_each.take(tail_limit).reverse
       end
+
+      if head_limit != tail_start
+        format_ellipsis(text)
+      end
+
       format_rows(text,
                   columns,
                   tail_column_values.transpose,
