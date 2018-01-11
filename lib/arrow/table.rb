@@ -238,6 +238,13 @@ module Arrow
       saver.save
     end
 
+    def pack
+      packed_columns = columns.collect do |column|
+        column.pack
+      end
+      self.class.new(schema, packed_columns)
+    end
+
     def to_s(options={})
       formatter = TableFormatter.new(self, options)
       formatter.format

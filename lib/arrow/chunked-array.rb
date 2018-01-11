@@ -48,5 +48,17 @@ module Arrow
     def each_chunk(&block)
       chunks.each(&block)
     end
+
+    def pack
+      first_chunk = chunks.first
+      data_type = first_chunk.value_data_type
+      case data_type
+      when TimestampDataType
+        builder = TimestampArrayBuilder.new(data_type)
+        builder.build(to_a)
+      else
+        first_chunk.class.new(to_a)
+      end
+    end
   end
 end

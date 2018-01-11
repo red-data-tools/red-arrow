@@ -14,12 +14,49 @@
 
 class ChunkedArrayTest < Test::Unit::TestCase
   test("#each") do
-    arrayes = [
+    arrays = [
       Arrow::BooleanArray.new([true, false]),
       Arrow::BooleanArray.new([nil, true]),
     ]
-    chunked_array = Arrow::ChunkedArray.new(arrayes)
+    chunked_array = Arrow::ChunkedArray.new(arrays)
     assert_equal([true, false, nil, true],
                  chunked_array.to_a)
+  end
+
+  sub_test_case("#pack") do
+    test("basic array") do
+      arrays = [
+        Arrow::BooleanArray.new([true, false]),
+        Arrow::BooleanArray.new([nil, true]),
+      ]
+      chunked_array = Arrow::ChunkedArray.new(arrays)
+      packed_chunked_array = chunked_array.pack
+      assert_equal([
+                     Arrow::BooleanArray,
+                     [true, false, nil, true],
+                   ],
+                   [
+                     packed_chunked_array.class,
+                     packed_chunked_array.to_a,
+                   ])
+    end
+
+    test("TimestampArray") do
+      type = Arrow::TimestampDataType.new(:nano)
+      arrays = [
+        Arrow::TimestampArrayBuilder.new(type).build([Time.at(0)]),
+        Arrow::TimestampArrayBuilder.new(type).build([Time.at(1)]),
+      ]
+      chunked_array = Arrow::ChunkedArray.new(arrays)
+      packed_chunked_array = chunked_array.pack
+      assert_equal([
+                     Arrow::TimestampArray,
+                     [Time.at(0), Time.at(1)],
+                   ],
+                   [
+                     packed_chunked_array.class,
+                     packed_chunked_array.to_a,
+                   ])
+    end
   end
 end

@@ -391,4 +391,20 @@ class TableTest < Test::Unit::TestCase
       end
     end
   end
+
+  test("#pack") do
+    packed_table = @table.pack
+    column_n_chunks = packed_table.columns.collect {|c| c.data.n_chunks}
+    assert_equal([[1, 1], <<-TABLE], [column_n_chunks, packed_table.to_s])
+	count	visible
+0	    1	true   
+1	    2	false  
+2	    4	       
+3	    8	true   
+4	   16	true   
+5	   32	false  
+6	   64	       
+7	  128	       
+    TABLE
+  end
 end

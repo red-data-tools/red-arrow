@@ -25,5 +25,9 @@ module Arrow
 
       data.each(&block)
     end
+
+    def pack
+      self.class.new(field, data.pack)
+    end
   end
 end

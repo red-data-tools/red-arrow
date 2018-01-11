@@ -24,4 +24,17 @@ class ColumnTest < Test::Unit::TestCase
     assert_equal([true, false, nil, true],
                  column.to_a)
   end
+
+  test("#pack") do
+    arrays = [
+      Arrow::BooleanArray.new([true, false]),
+      Arrow::BooleanArray.new([nil, true]),
+    ]
+    chunked_array = Arrow::ChunkedArray.new(arrays)
+    column = Arrow::Column.new(Arrow::Field.new("visible", :boolean),
+                               chunked_array)
+    packed_column = column.pack
+    assert_equal([1, [true, false, nil, true]],
+                 [packed_column.data.n_chunks, packed_column.to_a])
+  end
 end
