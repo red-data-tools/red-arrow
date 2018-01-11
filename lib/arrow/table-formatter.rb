@@ -40,7 +40,7 @@ module Arrow
                   0)
       return text if n_rows <= border
 
-      format_ellips(text)
+      format_ellipsis(text)
 
       tail_start = [border, n_rows - border].max
       tail_limit = n_rows - tail_start

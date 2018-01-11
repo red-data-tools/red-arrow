@@ -28,7 +28,7 @@ module Arrow
       end
     end
 
-    def format_elipsis(text)
+    def format_ellipsis(text)
       text << "...\n"
     end
   end
