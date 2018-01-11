@@ -26,6 +26,12 @@ module Arrow
       data.each(&block)
     end
 
+    def reverse_each(&block)
+      return to_enum(__method__) unless block_given?
+
+      data.reverse_each(&block)
+    end
+
     def pack
       self.class.new(field, data.pack)
     end

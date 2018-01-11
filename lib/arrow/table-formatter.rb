@@ -47,7 +47,8 @@ module Arrow
       return text if n_rows <= border
 
       text << "...\n"
-      tail_limit = [border, n_rows - border].max
+      tail_start = [border, n_rows - border].max
+      tail_limit = n_rows - tail_start
       tail_column_values = columns.collect do |column|
         column.reverse_each.take(tail_limit).reverse
       end
@@ -55,7 +56,7 @@ module Arrow
                   columns,
                   tail_column_values.transpose,
                   n_digits,
-                  tail_limit)
+                  tail_start)
 
       text
     end
