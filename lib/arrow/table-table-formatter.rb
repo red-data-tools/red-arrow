@@ -15,7 +15,7 @@
 require "time"
 
 module Arrow
-  class TableTableFormatter
+  class TableTableFormatter < TableFormatter
     private
     def format_header(text, columns)
       columns.each do |column|
