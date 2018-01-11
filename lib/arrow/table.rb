@@ -113,29 +113,18 @@ module Arrow
           from = slicer[0]
           to = from + slicer[1] - 1
           ranges << [from, to]
+        when ChunkedArray
+          offset = 0
+          slicer.each_chunk do |array|
+            boolean_array_to_slice_ranges(array, offset, ranges)
+            offset += array.length
+          end
         when BooleanArray
-          in_target = false
-          target_start = nil
-          slicer.each_with_index do |is_target, i|
-            if is_target
-              unless in_target
-                target_start = i
-                in_target = true
-              end
-            else
-              if in_target
-                ranges << [target_start, i - 1]
-                target_start = nil
-                in_target = false
-              end
-            end
-          end
-          if in_target
-            ranges << [target_start, slicer.length - 1]
-          end
+          boolean_array_to_slice_ranges(slicer, 0, ranges)
         else
-          message = "slicer must be Integer, Range, [from, to] or " +
-            "Arrow::BooleanArray, Arrow::Slicer::Condition: #{slicer.inspect}"
+          message = "slicer must be Integer, Range, [from, to], " +
+            "Arrow::ChunkedArray of Arrow::BooleanArray, " +
+            "Arrow::BooleanArray or Arrow::Slicer::Condition: #{slicer.inspect}"
           raise ArgumentError, message
         end
       end
@@ -272,6 +261,28 @@ module Arrow
     end
 
     private
+    def boolean_array_to_slice_ranges(array, offset, ranges)
+      in_target = false
+      target_start = nil
+      array.each_with_index do |is_target, i|
+        if is_target
+          unless in_target
+            target_start = offset + i
+            in_target = true
+          end
+        else
+          if in_target
+            ranges << [target_start, offset + i - 1]
+            target_start = nil
+            in_target = false
+          end
+        end
+      end
+      if in_target
+        ranges << [target_start, offset + array.length - 1]
+      end
+    end
+
     def slice_by_ranges(ranges)
       sliced_columns = columns.collect do |column|
         chunks = []

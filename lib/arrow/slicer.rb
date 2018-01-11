@@ -110,26 +110,19 @@ module Arrow
 
       def evaluate
         data = @column.data
-        if data.n_chunks == 1
-          array = data.get_chunk(0)
-          if array.is_a?(BooleanArray)
-            array
-          else
-            array.cast(BooleanDataType.new)
-          end
+
+        case @column.data_type
+        when BooleanDataType
+          data
         else
-          raw_array = []
-          data.each_chunk do |chunk|
-            if chunk.is_a?(BooleanArray)
-              boolean_array = chunk
-            else
-              boolean_array = chunk.cast(BooleanDataType.new)
+          if data.n_chunks == 1
+            data.get_chunk(0).cast(BooleanDataType.new)
+          else
+            arrays = data.each_chunk.collect do |chunk|
+              chunk.cast(BooleanDataType.new)
             end
-            boolean_array.each do |value|
-              raw_array << value
-            end
+            ChunkedArray.new(arrays)
           end
-          BooleanArray.new(raw_array)
         end
       end
 
