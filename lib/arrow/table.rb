@@ -61,6 +61,9 @@ module Arrow
       end
     end
 
+    alias_method :size, :n_rows
+    alias_method :length, :n_rows
+
     # TODO
     #
     # @return [Arrow::Column, Array<Arrow::Column>, nil]
