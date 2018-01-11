@@ -1,4 +1,4 @@
-# Copyright 2017 Kouhei Sutou <kou@clear-code.com>
+# Copyright 2017-2018 Kouhei Sutou <kou@clear-code.com>
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -16,9 +16,13 @@ module Arrow
   class ChunkedArray
     include Enumerable
 
+    alias_method :chunks_raw, :chunks
+    def chunks
+      @chunks ||= chunks_raw
+    end
+
     def [](i)
-      n_chunks.times do |j|
-        array = get_chunk(j)
+      chunks.each do |array|
         return array[i] if i < array.length
         i -= array.length
       end
@@ -28,17 +32,21 @@ module Arrow
     def each(&block)
       return to_enum(__method__) unless block_given?
 
-      each_chunk do |array|
+      chunks.each do |array|
         array.each(&block)
       end
     end
 
-    def each_chunk
+    def reverse_each(&block)
       return to_enum(__method__) unless block_given?
 
-      n_chunks.times do |i|
-        yield(get_chunk(i))
+      chunks.reverse_each do |array|
+        array.reverse_each(&block)
       end
+    end
+
+    def each_chunk(&block)
+      chunks.each(&block)
     end
   end
 end

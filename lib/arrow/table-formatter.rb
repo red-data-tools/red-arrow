@@ -35,15 +35,27 @@ module Arrow
 
       border = @options[:border] || 10
       n_digits = (Math.log10(n_rows) + 1).truncate
-      [border, n_rows].min.times do |i|
-        format_row(text, columns, i, n_digits)
+      head_limit = [border, n_rows].min
+      head_column_values = columns.collect do |column|
+        column.each.take(head_limit)
       end
+      format_rows(text,
+                  columns,
+                  head_column_values.transpose,
+                  n_digits,
+                  0)
       return text if n_rows <= border
 
       text << "...\n"
-      [border, n_rows - border].max.upto(n_rows - 1) do |i|
-        format_row(text, columns, i, n_digits)
+      tail_limit = [border, n_rows - border].max
+      tail_column_values = columns.collect do |column|
+        column.reverse_each.take(tail_limit).reverse
       end
+      format_rows(text,
+                  columns,
+                  tail_column_values.transpose,
+                  n_digits,
+                  tail_limit)
 
       text
     end
@@ -61,18 +73,20 @@ module Arrow
       end
     end
 
-    def format_row(text, columns, i, n_digits)
-      text << ("%*d" % [n_digits, i])
-      columns.each do |column|
-        text << "\t"
-        text << format_column_value(column, i)
+    def format_rows(text, columns, rows, n_digits, start_offset)
+      rows.each_with_index do |row, nth_row|
+        text << ("%*d" % [n_digits, start_offset + nth_row])
+        row.each_with_index do |column_value, nth_column|
+          text << "\t"
+          column = columns[nth_column]
+          text << format_column_value(column, column_value)
+        end
+        text << "\n"
       end
-      text << "\n"
       text
     end
 
-    def format_column_value(column, i)
-      value = column[i]
+    def format_column_value(column, value)
       case value
       when Time
         value.iso8601
