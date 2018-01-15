@@ -21,6 +21,14 @@ module Arrow
       @chunks ||= chunks_raw
     end
 
+    def null?(i)
+      chunks.each do |array|
+        return array.null?(i) if i < array.length
+        i -= array.length
+      end
+      nil
+    end
+
     def [](i)
       chunks.each do |array|
         return array[i] if i < array.length

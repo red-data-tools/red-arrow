@@ -16,6 +16,10 @@ module Arrow
   class Column
     include Enumerable
 
+    def null?(i)
+      data.null?(i)
+    end
+
     def [](i)
       data[i]
     end

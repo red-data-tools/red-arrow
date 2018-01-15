@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+require "arrow/group"
 require "arrow/record-containable"
 
 module Arrow
@@ -235,6 +236,10 @@ module Arrow
         selected_columns = selected_columns.select(&block) if block_given?
       end
       self.class.new(selected_columns)
+    end
+
+    def group(*keys)
+      Group.new(self, keys)
     end
 
     def save(path, options={})
