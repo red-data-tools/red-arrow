@@ -1,4 +1,4 @@
-# Copyright 2017 Kouhei Sutou <kou@clear-code.com>
+# Copyright 2017-2018 Kouhei Sutou <kou@clear-code.com>
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -35,6 +35,7 @@ module Arrow
       require "arrow/column"
       require "arrow/csv-loader"
       require "arrow/csv-reader"
+      require "arrow/data-type"
       require "arrow/date32-array"
       require "arrow/date32-array-builder"
       require "arrow/date64-array"
