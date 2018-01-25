@@ -143,9 +143,17 @@ class TableTest < Test::Unit::TestCase
     end
 
     test("[String, Symbol]") do
-      assert_equal(Arrow::Table.new(@table.schema,
-                                    [@visible_column, @count_column]).to_s,
-                   @table["visible", :count].to_s)
+      raw_table = {
+        :a => Arrow::UInt8Array.new([1]),
+        :b => Arrow::UInt8Array.new([1]),
+        :c => Arrow::UInt8Array.new([1]),
+        :d => Arrow::UInt8Array.new([1]),
+        :e => Arrow::UInt8Array.new([1]),
+      }
+      table = Arrow::Table.new(raw_table)
+      assert_equal(Arrow::Table.new(:c => raw_table[:c],
+                                    :b => raw_table[:b]).to_s,
+                   table["c", :b].to_s)
     end
   end
 

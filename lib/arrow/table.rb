@@ -80,7 +80,7 @@ module Arrow
           end
           column
         end
-        self.class.new(schema, new_columns)
+        self.class.new(new_columns)
       end
     end
 
