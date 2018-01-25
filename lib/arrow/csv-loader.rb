@@ -172,6 +172,9 @@ module Arrow
             candidate_type = :date_time
           when Date
             candidate_type = :date
+          when String
+            next if value.empty?
+            candidate_type = :string
           else
             candidate_type = :string
           end
@@ -189,9 +192,21 @@ module Arrow
         when :boolean
           converters << selective_converter(i, &BOOLEAN_CONVERTER)
         when :integer
-          converters << selective_converter(i, &CSV::Converters[:integer])
+          converters << selective_converter(i) do |field|
+            if field.nil? or field.empty?
+              nil
+            else
+              CSV::Converters[:integer].call(field)
+            end
+          end
         when :float
-          converters << selective_converter(i, &CSV::Converters[:float])
+          converters << selective_converter(i) do |field|
+            if field.nil? or field.empty?
+              nil
+            else
+              CSV::Converters[:float].call(field)
+            end
+          end
         when :time
           converters << selective_converter(i, &ISO8601_CONVERTER)
         when :date_time
