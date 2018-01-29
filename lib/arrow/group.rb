@@ -113,8 +113,14 @@ module Arrow
       columns = @keys.collect.with_index do |key, i|
         key_column = @table[key]
         key_column_array_class = key_column.data.chunks.first.class
-        Column.new(key_column.field,
-                   key_column_array_class.new(grouped_key_arrays_raw[i]))
+        if key_column_array_class == TimestampArray
+          builder = TimestampArrayBuilder.new(key_column.data_type)
+          key_column_array = builder.build(grouped_key_arrays_raw[i])
+        else
+          key_column_array =
+            key_column_array_class.new(grouped_key_arrays_raw[i])
+        end
+        Column.new(key_column.field, key_column_array)
       end
       target_columns.each_with_index do |column, i|
         array = ArrayBuilder.build(aggregated_arrays_raw[i])

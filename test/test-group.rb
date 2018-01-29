@@ -27,6 +27,25 @@ class GroupTest < Test::Unit::TestCase
     @table = Arrow::Table.new(raw_table)
   end
 
+  sub_test_case("key") do
+    test("Time") do
+      time_values = [
+        Time.parse("2018-01-29"),
+        Time.parse("2018-01-30"),
+      ]
+      raw_table = {
+        :time => Arrow::ArrayBuilder.build(time_values),
+        :int => Arrow::Int32Array.new([-1, -2]),
+      }
+      table = Arrow::Table.new(raw_table)
+      assert_equal(<<-TABLE, table.group(:time).count.to_s)
+	                     time	int
+0	2018-01-29T00:00:00+09:00	  1
+1	2018-01-30T00:00:00+09:00	  1
+      TABLE
+    end
+  end
+
   sub_test_case("#count") do
     test("single") do
       assert_equal(<<-TABLE, @table.group(:group_key1).count.to_s)
