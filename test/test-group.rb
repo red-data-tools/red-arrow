@@ -68,4 +68,25 @@ class GroupTest < Test::Unit::TestCase
       TABLE
     end
   end
+
+  sub_test_case("#average") do
+    test("single") do
+      assert_equal(<<-TABLE, @table.group(:group_key1).average.to_s)
+	group_key1	group_key2	       int	      uint	     float
+0	         1	  1.000000	 -1.500000	  1.000000	  2.200000
+1	         2	  1.000000	  0.000000	  3.000000	  3.300000
+2	         3	  1.666667	 -5.000000	  5.000000	  5.500000
+      TABLE
+    end
+
+    test("multiple") do
+      assert_equal(<<-TABLE, @table.group(:group_key1, :group_key2).average.to_s)
+	group_key1	group_key2	       int	      uint	     float
+0	         1	         1	 -1.500000	  1.000000	  2.200000
+1	         2	         1	  0.000000	  3.000000	  3.300000
+2	         3	         1	 -4.000000	  4.000000	  4.400000
+3	         3	         2	 -5.500000	  5.500000	  6.050000
+      TABLE
+    end
+  end
 end

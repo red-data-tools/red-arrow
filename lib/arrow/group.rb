@@ -49,6 +49,26 @@ module Arrow
       end
     end
 
+    def average
+      key_names = @keys.collect(&:to_s)
+      target_columns = @table.columns.reject do |column|
+        key_names.include?(column.name) or
+          not column.data_type.numeric?
+      end
+      aggregate(target_columns) do |column, indexes|
+        average = 0.0
+        n = 0
+        indexes.each do |index|
+          value = column[index]
+          unless value.nil?
+            n += 1
+            average += (value - average) / n
+          end
+        end
+        average
+      end
+    end
+
     private
     def aggregate(target_columns)
       sort_values = @table.n_rows.times.collect do |i|
