@@ -47,4 +47,25 @@ class GroupTest < Test::Unit::TestCase
       TABLE
     end
   end
+
+  sub_test_case("#sum") do
+    test("single") do
+      assert_equal(<<-TABLE, @table.group(:group_key1).sum.to_s)
+	group_key1	group_key2	int	uint	     float
+0	         1	         2	 -3	   1	  2.200000
+1	         2	         1	  0	   3	  3.300000
+2	         3	         5	-15	  15	 16.500000
+      TABLE
+    end
+
+    test("multiple") do
+      assert_equal(<<-TABLE, @table.group(:group_key1, :group_key2).sum.to_s)
+	group_key1	group_key2	int	uint	     float
+0	         1	         1	 -3	   1	  2.200000
+1	         2	         1	  0	   3	  3.300000
+2	         3	         1	 -4	   4	  4.400000
+3	         3	         2	-11	  11	 12.100000
+      TABLE
+    end
+  end
 end
