@@ -141,20 +141,6 @@ class TableTest < Test::Unit::TestCase
     test("[Symbol]") do
       assert_equal(@visible_column, @table[:visible])
     end
-
-    test("[String, Symbol]") do
-      raw_table = {
-        :a => Arrow::UInt8Array.new([1]),
-        :b => Arrow::UInt8Array.new([1]),
-        :c => Arrow::UInt8Array.new([1]),
-        :d => Arrow::UInt8Array.new([1]),
-        :e => Arrow::UInt8Array.new([1]),
-      }
-      table = Arrow::Table.new(raw_table)
-      assert_equal(Arrow::Table.new(:c => raw_table[:c],
-                                    :b => raw_table[:b]).to_s,
-                   table["c", :b].to_s)
-    end
   end
 
   sub_test_case("#merge") do

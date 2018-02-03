@@ -65,24 +65,7 @@ module Arrow
     alias_method :size, :n_rows
     alias_method :length, :n_rows
 
-    # TODO
-    #
-    # @return [Arrow::Column, Array<Arrow::Column>, nil]
-    def [](*args)
-      if args.size == 1
-        find_column(args[0])
-      else
-        new_columns = args.collect do |column_name|
-          column = find_column(column_name)
-          if column.nil?
-            message = "unknown column: <#{column_name.inspect}>: #{inspect}"
-            raise ArgumentError, message
-          end
-          column
-        end
-        self.class.new(new_columns)
-      end
-    end
+    alias_method :[], :find_column
 
     # TODO
     #
@@ -206,6 +189,9 @@ module Arrow
       remove_column_raw(index)
     end
 
+    # TODO
+    #
+    # @return [Arrow::Table]
     def select_columns(*selectors, &block)
       if selectors.empty?
         return to_enum(__method__) unless block_given?
