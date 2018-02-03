@@ -134,6 +134,10 @@ module Arrow
         self == nil
       end
 
+      def valid?
+        self != nil
+      end
+
       def ==(value)
         EqualCondition.new(@column, value)
       end
@@ -242,8 +246,12 @@ module Arrow
       def evaluate
         case @value
         when nil
-          raw_array = @column.collect do |value|
-            not value.nil?
+          if @column.n_nulls.zero?
+            raw_array = [true] * @column.length
+          else
+            raw_array = @column.length.times.collect do |i|
+              @column.valid?(i)
+            end
           end
           BooleanArray.new(raw_array)
         else

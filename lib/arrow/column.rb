@@ -20,6 +20,10 @@ module Arrow
       data.null?(i)
     end
 
+    def valid?(i)
+      data.valid?(i)
+    end
+
     def [](i)
       data[i]
     end

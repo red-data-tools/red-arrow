@@ -106,6 +106,21 @@ class SlicerTest < Test::Unit::TestCase
     TABLE
   end
 
+  test("column.valid?") do
+    sliced_table = @table.slice do |slicer|
+      slicer.visible.valid?
+    end
+    assert_equal(<<-TABLE, sliced_table.to_s)
+	count	visible
+0	    1	true   
+1	    2	false  
+2	    8	true   
+3	   16	true   
+4	   32	false  
+5	  256	true   
+    TABLE
+  end
+
   sub_test_case("column ==") do
     test("nil") do
       sliced_table = @table.slice do |slicer|

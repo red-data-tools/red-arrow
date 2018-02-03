@@ -29,6 +29,14 @@ module Arrow
       nil
     end
 
+    def valid?(i)
+      chunks.each do |array|
+        return array.valid?(i) if i < array.length
+        i -= array.length
+      end
+      nil
+    end
+
     def [](i)
       chunks.each do |array|
         return array[i] if i < array.length
