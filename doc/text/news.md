@@ -1,5 +1,49 @@
 # News
 
+## 0.8.2 - 2018-02-04
+
+### Improvements
+
+  * `Arrow::Table#size`: Added.
+
+  * `Arrow::Table#length`: Added.
+
+  * `Arrow::Table#pack`: Added.
+
+  * `Arrow::Column#pack`: Added.
+
+  * `Arrow::ChunkedArray#pack`: Added.
+
+  * `Arrow::Column#reverse_each`: Added.
+
+  * `Arrow::Table#slice`: Added negative integer support.
+
+  * `Arrow::Slicer::ColumnCondition#in?`: Added.
+
+  * `Arrow::Table#group`: Added.
+
+  * `Arrow::ChunkedArray#null?`: Added.
+
+  * `Arrow::Column#null?`: Added.
+
+  * `Arrow::Group`: Added.
+
+  * `Arrow::CSVLoader`: Changed to treat `""` as a null value instead
+    of empty string.
+
+  * `Arrow::Table#[]`: Stopped to accept multiple column name.
+
+  * `Arrow::ChunkedArray#valid?`: Added.
+
+  * `Arrow::Column#valid?`: Added.
+
+  * `Arrow::Slicer::ColumnCondition#valid?`: Added.
+
+### Fixes
+
+  * `Arrow::TableFormatter`: Fixed a bug that too much records are
+    formatted.
+
 ## 0.8.1 - 2018-01-05
 
 ### Improvements
