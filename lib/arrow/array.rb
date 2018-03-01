@@ -29,6 +29,7 @@ module Arrow
     end
 
     def [](i)
+      i += length if i < 0
       if null?(i)
         nil
       else

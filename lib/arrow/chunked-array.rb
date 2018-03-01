@@ -38,6 +38,7 @@ module Arrow
     end
 
     def [](i)
+      i += length if i < 0
       chunks.each do |array|
         return array[i] if i < array.length
         i -= array.length
