@@ -58,6 +58,18 @@ class TableTest < Test::Unit::TestCase
       TABLE
     end
 
+    test("Array: boolean") do
+      target_rows_raw = [nil, true, true, false, true, false, true, true]
+      assert_equal(<<-TABLE, @table.slice(target_rows_raw).to_s)
+	count	visible
+0	    2	false  
+1	    4	       
+2	   16	true   
+3	   64	       
+4	  128	       
+      TABLE
+    end
+
     test("Integer: positive") do
       assert_equal(<<-TABLE, @table.slice(2).to_s)
 	count	visible

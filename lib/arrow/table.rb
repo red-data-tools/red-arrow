@@ -97,10 +97,16 @@ module Arrow
           to += n_rows if to < 0
           ranges << [from, to]
         when ::Array
-          from = slicer[0]
-          from += n_rows if from < 0
-          to = from + slicer[1] - 1
-          ranges << [from, to]
+          if slicer.size == 2 and
+              slicer[0].is_a?(Integer) and
+              slicer[1].is_a?(Integer)
+            from = slicer[0]
+            from += n_rows if from < 0
+            to = from + slicer[1] - 1
+            ranges << [from, to]
+          else
+            boolean_array_to_slice_ranges(slicer, 0, ranges)
+          end
         when ChunkedArray
           offset = 0
           slicer.each_chunk do |array|
