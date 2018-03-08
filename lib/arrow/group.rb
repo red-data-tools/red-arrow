@@ -69,6 +69,24 @@ module Arrow
       end
     end
 
+    def min
+      key_names = @keys.collect(&:to_s)
+      target_columns = @table.columns.reject do |column|
+        key_names.include?(column.name) or
+          not column.data_type.numeric?
+      end
+      aggregate(target_columns) do |column, indexes|
+        n = nil
+        indexes.each do |index|
+          value = column[index]
+          next if value.nil?
+          n ||= value
+          n = value if value < n
+        end
+        n
+      end
+    end
+
     private
     def aggregate(target_columns)
       sort_values = @table.n_rows.times.collect do |i|

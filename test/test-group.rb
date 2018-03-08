@@ -108,4 +108,25 @@ class GroupTest < Test::Unit::TestCase
       TABLE
     end
   end
+
+  sub_test_case("#min") do
+    test("single") do
+      assert_equal(<<-TABLE, @table.group(:group_key1).min.to_s)
+	group_key1	group_key2	int	uint	     float
+0	         1	         1	 -2	   1	  2.200000
+1	         2	         1	   	   3	  3.300000
+2	         3	         1	 -6	   4	  4.400000
+      TABLE
+    end
+
+    test("multiple") do
+      assert_equal(<<-TABLE, @table.group(:group_key1, :group_key2).min.to_s)
+	group_key1	group_key2	int	uint	     float
+0	         1	         1	 -2	   1	  2.200000
+1	         2	         1	   	   3	  3.300000
+2	         3	         1	 -4	   4	  4.400000
+3	         3	         2	 -6	   5	  5.500000
+      TABLE
+    end
+  end
 end
