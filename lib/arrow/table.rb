@@ -228,6 +228,10 @@ module Arrow
       Group.new(self, keys)
     end
 
+    def window(size: nil)
+      RollingWindow.new(self, size)
+    end
+
     def save(path, options={})
       saver = TableSaver.new(self, path, options)
       saver.save

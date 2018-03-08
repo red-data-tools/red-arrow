@@ -43,6 +43,7 @@ module Arrow
       require "arrow/field"
       require "arrow/record"
       require "arrow/record-batch"
+      require "arrow/rolling-window"
       require "arrow/slicer"
       require "arrow/table"
       require "arrow/table-formatter"
