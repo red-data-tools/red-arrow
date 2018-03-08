@@ -129,4 +129,25 @@ class GroupTest < Test::Unit::TestCase
       TABLE
     end
   end
+
+  sub_test_case("#max") do
+    test("single") do
+      assert_equal(<<-TABLE, @table.group(:group_key1).max.to_s)
+	group_key1	group_key2	int	uint	     float
+0	         1	         1	 -1	   1	  2.200000
+1	         2	         1	   	   3	  3.300000
+2	         3	         2	 -4	   6	  6.600000
+      TABLE
+    end
+
+    test("multiple") do
+      assert_equal(<<-TABLE, @table.group(:group_key1, :group_key2).max.to_s)
+	group_key1	group_key2	int	uint	     float
+0	         1	         1	 -1	   1	  2.200000
+1	         2	         1	   	   3	  3.300000
+2	         3	         1	 -4	   4	  4.400000
+3	         3	         2	 -5	   6	  6.600000
+      TABLE
+    end
+  end
 end
