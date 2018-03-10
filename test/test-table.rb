@@ -119,7 +119,7 @@ class TableTest < Test::Unit::TestCase
     end
 
     test("[from, to]: positive") do
-      assert_equal(<<-TABLE, @table.slice([0, 2]).to_s)
+      assert_equal(<<-TABLE, @table.slice(0, 2).to_s)
 	count	visible
 0	    1	true   
 1	    2	false  
@@ -127,21 +127,34 @@ class TableTest < Test::Unit::TestCase
     end
 
     test("[from, to]: negative") do
-      assert_equal(<<-TABLE, @table.slice([-4, 2]).to_s)
+      assert_equal(<<-TABLE, @table.slice(-4, 2).to_s)
 	count	visible
 0	   16	true   
 1	   32	false  
       TABLE
     end
 
-    test("Integer, Range, ...") do
-      assert_equal(<<-TABLE, @table.slice(0, 4...7).to_s)
-	count	visible
-0	    1	true   
-1	   16	true   
-2	   32	false  
-3	   64	       
-      TABLE
+    sub_test_case("wrong argument") do
+      test("no arguments") do
+        message = "wrong number of arguments (given 0, expected 1..2)"
+        assert_raise(ArgumentError.new(message)) do
+          @table.slice
+        end
+      end
+
+      test("too many arguments: with block") do
+        message = "wrong number of arguments (given 3, expected 1..2)"
+        assert_raise(ArgumentError.new(message)) do
+          @table.slice(1, 2, 3)
+        end
+      end
+
+      test("too many arguments: without block") do
+        message = "wrong number of arguments (given 3, expected 0..2)"
+        assert_raise(ArgumentError.new(message)) do
+          @table.slice(1, 2, 3) {}
+        end
+      end
     end
   end
 

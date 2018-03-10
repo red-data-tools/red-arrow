@@ -70,7 +70,30 @@ module Arrow
     # TODO
     #
     # @return [Arrow::Table]
-    def slice(*slicers)
+    def slice(*args)
+      slicers = []
+      expected_n_args = nil
+      case args.size
+      when 0
+        expected_n_args = "1..2" unless block_given?
+      when 1
+        slicers << args[0]
+      when 2
+        from, to = args
+        slicers << (from...(from + to))
+      else
+        if block_given?
+          expected_n_args = "0..2"
+        else
+          expected_n_args = "1..2"
+        end
+      end
+      if expected_n_args
+        message = "wrong number of arguments " +
+          "(given #{args.size}, expected #{expected_n_args})"
+        raise ArgumentError, message
+      end
+
       if block_given?
         block_slicer = yield(Slicer.new(self))
         case block_slicer
@@ -82,6 +105,7 @@ module Arrow
           slicers << block_slicer
         end
       end
+
       ranges = []
       slicers.each do |slicer|
         slicer = slicer.evaluate if slicer.respond_to?(:evaluate)
@@ -97,16 +121,7 @@ module Arrow
           to += n_rows if to < 0
           ranges << [from, to]
         when ::Array
-          if slicer.size == 2 and
-              slicer[0].is_a?(Integer) and
-              slicer[1].is_a?(Integer)
-            from = slicer[0]
-            from += n_rows if from < 0
-            to = from + slicer[1] - 1
-            ranges << [from, to]
-          else
-            boolean_array_to_slice_ranges(slicer, 0, ranges)
-          end
+          boolean_array_to_slice_ranges(slicer, 0, ranges)
         when ChunkedArray
           offset = 0
           slicer.each_chunk do |array|
@@ -116,7 +131,7 @@ module Arrow
         when BooleanArray
           boolean_array_to_slice_ranges(slicer, 0, ranges)
         else
-          message = "slicer must be Integer, Range, [from, to], " +
+          message = "slicer must be Integer, Range, (from, to), " +
             "Arrow::ChunkedArray of Arrow::BooleanArray, " +
             "Arrow::BooleanArray or Arrow::Slicer::Condition: #{slicer.inspect}"
           raise ArgumentError, message
