@@ -155,7 +155,16 @@ module Arrow
     def detect_robust_converters(csv)
       column_types = []
       csv.each do |row|
-        row.each_with_index do |(_name, value), i|
+        if row.is_a?(CSV::Row)
+          each_value = Enumerator.new do |yielder|
+            row.each do |_name, value|
+              yielder << value
+            end
+          end
+        else
+          each_value = row.each
+        end
+        each_value.with_index do |value, i|
           current_column_type = column_types[i]
           next if current_column_type == :string
 

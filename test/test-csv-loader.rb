@@ -17,62 +17,62 @@ class CSVLoaderTest < Test::Unit::TestCase
 
   sub_test_case(".load") do
     test("String: data: with header") do
-      data = fixture_path("with-header.csv").read
+      data = fixture_path("with-header-float.csv").read
       assert_equal(<<-TABLE, Arrow::CSVLoader.load(data).to_s)
-	name	score
-0	alice	   10
-1	bob 	   29
-2	chris	   -1
+	name	     score
+0	alice	 10.100000
+1	bob 	 29.200000
+2	chris	 -1.300000
       TABLE
     end
 
     test("String: data: without header") do
-      data = fixture_path("without-header.csv").read
+      data = fixture_path("without-header-float.csv").read
       assert_equal(<<-TABLE, Arrow::CSVLoader.load(data).to_s)
-	0	1
-0	alice	10
-1	bob	29
-2	chris	-1
+	0	         1
+0	alice	 10.100000
+1	bob	 29.200000
+2	chris	 -1.300000
       TABLE
     end
 
     test("String: path: with header") do
-      path = fixture_path("with-header.csv").to_s
+      path = fixture_path("with-header-float.csv").to_s
       assert_equal(<<-TABLE, Arrow::CSVLoader.load(path).to_s)
-	name	score
-0	alice	   10
-1	bob 	   29
-2	chris	   -1
+	name	     score
+0	alice	 10.100000
+1	bob 	 29.200000
+2	chris	 -1.300000
       TABLE
     end
 
     test("String: path: without header") do
-      path = fixture_path("without-header.csv").to_s
+      path = fixture_path("without-header-float.csv").to_s
       assert_equal(<<-TABLE, Arrow::CSVLoader.load(path).to_s)
-	0	1
-0	alice	10
-1	bob	29
-2	chris	-1
+	0	         1
+0	alice	 10.100000
+1	bob	 29.200000
+2	chris	 -1.300000
       TABLE
     end
 
     test("Pathname: with header") do
-      path = fixture_path("with-header.csv")
+      path = fixture_path("with-header-float.csv")
       assert_equal(<<-TABLE, Arrow::CSVLoader.load(path).to_s)
-	name	score
-0	alice	   10
-1	bob 	   29
-2	chris	   -1
+	name	     score
+0	alice	 10.100000
+1	bob 	 29.200000
+2	chris	 -1.300000
       TABLE
     end
 
     test("Pathname: without header") do
-      path = fixture_path("without-header.csv")
+      path = fixture_path("without-header-float.csv")
       assert_equal(<<-TABLE, Arrow::CSVLoader.load(path).to_s)
-	0	1
-0	alice	10
-1	bob	29
-2	chris	-1
+	0	         1
+0	alice	 10.100000
+1	bob	 29.200000
+2	chris	 -1.300000
       TABLE
     end
 
