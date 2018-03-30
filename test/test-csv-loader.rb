@@ -95,5 +95,17 @@ class CSVLoaderTest < Test::Unit::TestCase
 2	chris	   -1
       TABLE
     end
+
+    test("number: float, integer") do
+      path = fixture_path("float-integer.csv").to_s
+      assert_equal([2.9, 10, -1.1],
+                   Arrow::CSVLoader.load(path)[:score].to_a)
+    end
+
+    test("number: integer, float") do
+      path = fixture_path("integer-float.csv").to_s
+      assert_equal([10.0, 2.9, -1.1],
+                   Arrow::CSVLoader.load(path)[:score].to_a)
+    end
   end
 end

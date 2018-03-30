@@ -161,6 +161,9 @@ module Arrow
             candidate_type = :boolean
           when Integer
             candidate_type = :integer
+            if current_column_type == :float
+              candidate_type = :float
+            end
           when Float
             candidate_type = :float
             if current_column_type == :integer
