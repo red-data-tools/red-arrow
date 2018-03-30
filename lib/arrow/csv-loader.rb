@@ -131,6 +131,10 @@ module Arrow
     end
 
     def have_header?(csv)
+      if @options.key?(:headers)
+        return @options[:headers]
+      end
+
       row1 = csv.shift
       return false if row1.nil?
       return false if row1.any?(&:nil?)
