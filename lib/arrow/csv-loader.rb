@@ -139,6 +139,8 @@ module Arrow
       return nil if row2.nil?
       return true if row2.any?(&:nil?)
 
+      return false if row1.any? {|value| not value.is_a?(String)}
+
       if row1.collect(&:class) != row2.collect(&:class)
         return true
       end
