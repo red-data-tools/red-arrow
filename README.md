@@ -1,5 +1,7 @@
 # README
 
+This project has been donated to Apache Arrow: https://github.com/apache/arrow/tree/master/ruby/red-arrow
+
 ## Name
 
 Red Arrow
