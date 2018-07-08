@@ -57,4 +57,10 @@ module Arrow
       self
     end
   end
+
+  class StructArray < Array
+    def [](i)
+      get_field(i)
+    end
+  end
 end
